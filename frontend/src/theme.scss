@@ -1,0 +1,44 @@
+// ============================================================
+//  Angular Material theming — light + dark (M3)
+//  Dark mode is toggled by adding class "dark" on <html>.
+// ============================================================
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$hrm-light: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  typography: (
+    plain-family: (Inter, Roboto, 'Helvetica Neue', system-ui, sans-serif),
+    brand-family: (Inter, Roboto, sans-serif),
+  ),
+  density: (scale: 0),
+));
+
+$hrm-dark: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+));
+
+html {
+  @include mat.all-component-themes($hrm-light);
+  color-scheme: light;
+}
+
+html.dark {
+  @include mat.all-component-colors($hrm-dark);
+  color-scheme: dark;
+}
+
+// Compact form controls only (inputs / selects / form-fields) — smaller height
+// than the default without shrinking buttons, tables, etc.
+@include mat.form-field-density(-3);
+@include mat.input-density(-3);
+@include mat.select-density(-3);

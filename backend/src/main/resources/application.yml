@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: hrm-backend
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:hrm}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+app:
+  jwt:
+    # Override in production via APP_JWT_SECRET (min 32 chars for HS256)
+    secret: ${APP_JWT_SECRET:change-me-please-change-me-please-32b-min}
+    # Access token: short-lived (1h). Clients refresh it with the refresh token.
+    expiration-ms: ${APP_JWT_EXPIRATION_MS:3600000}
+    # Refresh token: long-lived (7 days), revocable server-side (logout).
+    refresh-expiration-ms: ${APP_JWT_REFRESH_EXPIRATION_MS:604800000}
+  auth:
+    cookie:
+      # Refresh token is stored in an httpOnly cookie (invisible to JS).
+      # Set secure=true in production (HTTPS). SameSite=Strict mitigates CSRF.
+      secure: ${APP_AUTH_COOKIE_SECURE:false}
+      same-site: ${APP_AUTH_COOKIE_SAMESITE:Strict}
+  cors:
+    allowed-origins: ${APP_CORS_ORIGINS:http://localhost:4200}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
