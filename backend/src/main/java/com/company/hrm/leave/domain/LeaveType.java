@@ -13,12 +13,12 @@ import lombok.Setter;
 @Table(name = "leave_type")
 public class LeaveType extends BaseEntity {
 
-    @Column(nullable = false)
-    private String name;
+  @Column(nullable = false)
+  private String name;
 
-    @Column(nullable = false)
-    private boolean paid = true;
+  @Column(nullable = false)
+  private boolean paid = true;
 
-    @Column(name = "max_days_per_year", nullable = false)
-    private int maxDaysPerYear = 0;
+  @Column(name = "max_days_per_year", nullable = false)
+  private int maxDaysPerYear = 0;
 }

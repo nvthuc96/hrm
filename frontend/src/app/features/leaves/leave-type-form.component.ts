@@ -41,7 +41,9 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
           <input matInput type="number" formControlName="maxDaysPerYear" />
         </mat-form-field>
 
-        <mat-slide-toggle formControlName="paid" class="mb-2">{{ 'ltype.f.paid' | translate }}</mat-slide-toggle>
+        <mat-slide-toggle formControlName="paid" class="mb-2">{{
+          'ltype.f.paid' | translate
+        }}</mat-slide-toggle>
       </form>
       @if (error()) {
         <p class="text-red-600 text-sm">{{ error() }}</p>
@@ -49,7 +51,12 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="ref.close(false)">{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" [disabled]="form.invalid || saving()" (click)="save()">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="form.invalid || saving()"
+        (click)="save()"
+      >
         {{ 'common.save' | translate }}
       </button>
     </mat-dialog-actions>

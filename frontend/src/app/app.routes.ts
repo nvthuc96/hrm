@@ -35,22 +35,30 @@ export const routes: Routes = [
       {
         path: 'employees',
         loadComponent: () =>
-          import('./features/employees/employee-list.component').then((m) => m.EmployeeListComponent),
+          import('./features/employees/employee-list.component').then(
+            (m) => m.EmployeeListComponent,
+          ),
       },
       {
         path: 'departments',
         loadComponent: () =>
-          import('./features/departments/department-list.component').then((m) => m.DepartmentListComponent),
+          import('./features/departments/department-list.component').then(
+            (m) => m.DepartmentListComponent,
+          ),
       },
       {
         path: 'positions',
         loadComponent: () =>
-          import('./features/positions/position-list.component').then((m) => m.PositionListComponent),
+          import('./features/positions/position-list.component').then(
+            (m) => m.PositionListComponent,
+          ),
       },
       {
         path: 'attendance',
         loadComponent: () =>
-          import('./features/attendance/attendance-list.component').then((m) => m.AttendanceListComponent),
+          import('./features/attendance/attendance-list.component').then(
+            (m) => m.AttendanceListComponent,
+          ),
       },
       {
         path: 'leaves',
@@ -60,7 +68,9 @@ export const routes: Routes = [
       {
         path: 'leave-types',
         loadComponent: () =>
-          import('./features/leaves/leave-type-list.component').then((m) => m.LeaveTypeListComponent),
+          import('./features/leaves/leave-type-list.component').then(
+            (m) => m.LeaveTypeListComponent,
+          ),
       },
       {
         path: 'payroll',
@@ -70,7 +80,9 @@ export const routes: Routes = [
       {
         path: 'salary-components',
         loadComponent: () =>
-          import('./features/payroll/salary-component-list.component').then((m) => m.SalaryComponentListComponent),
+          import('./features/payroll/salary-component-list.component').then(
+            (m) => m.SalaryComponentListComponent,
+          ),
       },
       {
         path: 'users',

@@ -4,8 +4,4 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public record LeaveTypeRequest(
-        @NotBlank String name,
-        boolean paid,
-        @PositiveOrZero int maxDaysPerYear
-) {
-}
+    @NotBlank String name, boolean paid, @PositiveOrZero int maxDaysPerYear) {}

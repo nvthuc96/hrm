@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, finalize, of, shareReplay, tap, throwError } from 'rxjs';
+import { Observable, catchError, finalize, of, shareReplay, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthResponse, SessionUser } from './models';
 

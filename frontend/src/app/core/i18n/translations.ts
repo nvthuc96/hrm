@@ -61,7 +61,8 @@ const vi: Record<string, string> = {
 
   // ---- login ----
   'login.heroTitle': 'Quản lý nhân sự,\ngọn gàng & hiện đại.',
-  'login.heroSub': 'Nhân viên, phòng ban, chấm công, nghỉ phép và bảng lương — tất cả trong một nơi.',
+  'login.heroSub':
+    'Nhân viên, phòng ban, chấm công, nghỉ phép và bảng lương — tất cả trong một nơi.',
   'login.copyright': '© 2026 HRM System',
   'login.welcome': 'Chào mừng trở lại',
   'login.subtitle': 'Đăng nhập để tiếp tục vào hệ thống.',
@@ -73,7 +74,8 @@ const vi: Record<string, string> = {
 
   // ---- not found ----
   'notFound.title': 'Không tìm thấy trang',
-  'notFound.desc': 'Trang bạn tìm không tồn tại hoặc đã được di chuyển. Kiểm tra lại đường dẫn hoặc quay về trang chính.',
+  'notFound.desc':
+    'Trang bạn tìm không tồn tại hoặc đã được di chuyển. Kiểm tra lại đường dẫn hoặc quay về trang chính.',
   'notFound.home': 'Về trang chính',
   'notFound.back': 'Quay lại',
 
@@ -365,7 +367,8 @@ const vi: Record<string, string> = {
   'print.preparer': 'Người lập',
   'print.receiver': 'Người nhận',
   'print.footer': 'Phiếu lương được tạo tự động từ hệ thống HRM · {date}',
-  'print.popupBlocked': 'Trình duyệt đã chặn cửa sổ in. Vui lòng cho phép pop-up để in phiếu lương.',
+  'print.popupBlocked':
+    'Trình duyệt đã chặn cửa sổ in. Vui lòng cho phép pop-up để in phiếu lương.',
 
   // ---- roles ----
   'role.ADMIN': 'Quản trị',
@@ -420,7 +423,8 @@ const vi: Record<string, string> = {
   'me.profile.address': 'Địa chỉ',
   'me.profile.balYear': 'Số dư phép {year}',
   'me.profile.noBalance': 'Chưa cấu hình loại nghỉ có số dư.',
-  'me.profile.notLinked': 'Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên. Vui lòng liên hệ quản trị/nhân sự.',
+  'me.profile.notLinked':
+    'Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên. Vui lòng liên hệ quản trị/nhân sự.',
   'me.profile.loadError': 'Không tải được hồ sơ.',
   'me.att.title': 'Chấm công của tôi',
   'me.att.sub': 'Lịch sử chấm công theo tháng.',
@@ -516,7 +520,8 @@ const en: Record<string, string> = {
 
   // ---- not found ----
   'notFound.title': 'Page not found',
-  'notFound.desc': 'The page you are looking for does not exist or has been moved. Check the URL or go back home.',
+  'notFound.desc':
+    'The page you are looking for does not exist or has been moved. Check the URL or go back home.',
   'notFound.home': 'Go home',
   'notFound.back': 'Go back',
 
@@ -691,11 +696,11 @@ const en: Record<string, string> = {
   'leave.cancelled': 'Request cancelled',
   'leave.actionFailed': 'Action failed',
   'leave.rejectTitle': 'Reject request',
-  'leave.rejectMsg': 'Reject {name}\'s request ({start} → {end})?',
+  'leave.rejectMsg': "Reject {name}'s request ({start} → {end})?",
   'leave.rejectLabel': 'Rejection reason',
   'leave.rejectPlaceholder': 'Enter a reason (optional)…',
   'leave.cancelTitle': 'Cancel request',
-  'leave.cancelMsg': 'Cancel {name}\'s leave request ({start} → {end})?',
+  'leave.cancelMsg': "Cancel {name}'s leave request ({start} → {end})?",
   'leave.cancelConfirm': 'Cancel request',
   'leaveForm.title': 'New leave request',
   'leaveForm.employee': 'Employee',
@@ -808,7 +813,8 @@ const en: Record<string, string> = {
   'print.preparer': 'Prepared by',
   'print.receiver': 'Received by',
   'print.footer': 'Payslip generated automatically by HRM · {date}',
-  'print.popupBlocked': 'The browser blocked the print window. Please allow pop-ups to print the payslip.',
+  'print.popupBlocked':
+    'The browser blocked the print window. Please allow pop-ups to print the payslip.',
 
   // ---- roles ----
   'role.ADMIN': 'Admin',
@@ -863,7 +869,8 @@ const en: Record<string, string> = {
   'me.profile.address': 'Address',
   'me.profile.balYear': 'Leave balance {year}',
   'me.profile.noBalance': 'No leave types with a balance configured.',
-  'me.profile.notLinked': 'Your account is not linked to an employee record. Please contact admin/HR.',
+  'me.profile.notLinked':
+    'Your account is not linked to an employee record. Please contact admin/HR.',
   'me.profile.loadError': 'Could not load profile.',
   'me.att.title': 'My attendance',
   'me.att.sub': 'Monthly attendance history.',

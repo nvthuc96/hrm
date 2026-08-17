@@ -62,49 +62,64 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
       @if (loading()) {
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       }
-      <div class="tbl-scroll"><table mat-table [dataSource]="data()" class="w-full">
-        <ng-container matColumnDef="employeeCode">
-          <th mat-header-cell *matHeaderCellDef>{{ 'emp.col.code' | translate }}</th>
-          <td mat-cell *matCellDef="let e">{{ e.employeeCode }}</td>
-        </ng-container>
-        <ng-container matColumnDef="fullName">
-          <th mat-header-cell *matHeaderCellDef>{{ 'emp.col.name' | translate }}</th>
-          <td mat-cell *matCellDef="let e">{{ e.fullName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="department">
-          <th mat-header-cell *matHeaderCellDef>{{ 'emp.col.department' | translate }}</th>
-          <td mat-cell *matCellDef="let e">{{ e.departmentName || '—' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="position">
-          <th mat-header-cell *matHeaderCellDef>{{ 'emp.col.position' | translate }}</th>
-          <td mat-cell *matCellDef="let e">{{ e.positionName || '—' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>{{ 'emp.col.status' | translate }}</th>
-          <td mat-cell *matCellDef="let e">
-            <span class="badge"
-              [class.badge-ok]="e.status === 'ACTIVE'"
-              [class.badge-warn]="e.status === 'ON_LEAVE'"
-              [class.badge-muted]="e.status === 'TERMINATED'">
-              {{ 'status.' + e.status | translate }}
-            </span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="text-right">{{ 'common.actions' | translate }}</th>
-          <td mat-cell *matCellDef="let e" class="text-right">
-            <button mat-icon-button [matTooltip]="'common.edit' | translate" (click)="openForm(e)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" [matTooltip]="'common.delete' | translate" (click)="confirmDelete(e)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+      <div class="tbl-scroll">
+        <table mat-table [dataSource]="data()" class="w-full">
+          <ng-container matColumnDef="employeeCode">
+            <th mat-header-cell *matHeaderCellDef>{{ 'emp.col.code' | translate }}</th>
+            <td mat-cell *matCellDef="let e">{{ e.employeeCode }}</td>
+          </ng-container>
+          <ng-container matColumnDef="fullName">
+            <th mat-header-cell *matHeaderCellDef>{{ 'emp.col.name' | translate }}</th>
+            <td mat-cell *matCellDef="let e">{{ e.fullName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="department">
+            <th mat-header-cell *matHeaderCellDef>{{ 'emp.col.department' | translate }}</th>
+            <td mat-cell *matCellDef="let e">{{ e.departmentName || '—' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="position">
+            <th mat-header-cell *matHeaderCellDef>{{ 'emp.col.position' | translate }}</th>
+            <td mat-cell *matCellDef="let e">{{ e.positionName || '—' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{ 'emp.col.status' | translate }}</th>
+            <td mat-cell *matCellDef="let e">
+              <span
+                class="badge"
+                [class.badge-ok]="e.status === 'ACTIVE'"
+                [class.badge-warn]="e.status === 'ON_LEAVE'"
+                [class.badge-muted]="e.status === 'TERMINATED'"
+              >
+                {{ 'status.' + e.status | translate }}
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
+              {{ 'common.actions' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let e" class="text-right">
+              <button
+                mat-icon-button
+                [matTooltip]="'common.edit' | translate"
+                (click)="openForm(e)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                [matTooltip]="'common.delete' | translate"
+                (click)="confirmDelete(e)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns"></tr>
-      </table></div>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
 
       @if (!loading() && data().length === 0) {
         <p class="text-center text-[var(--muted)] py-8 m-0">{{ 'emp.empty' | translate }}</p>
@@ -138,12 +153,10 @@ export class EmployeeListComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
-    this.searchCtrl.valueChanges
-      .pipe(debounceTime(300), distinctUntilChanged())
-      .subscribe(() => {
-        this.page.set(0);
-        this.load();
-      });
+    this.searchCtrl.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
+      this.page.set(0);
+      this.load();
+    });
   }
 
   onPage(e: PageEvent): void {
@@ -160,7 +173,9 @@ export class EmployeeListComponent implements OnInit {
         this.exporting.set(false);
       },
       error: () => {
-        this.snackBar.open(this.i18n.t('common.exportFailed'), this.i18n.t('common.close'), { duration: 3000 });
+        this.snackBar.open(this.i18n.t('common.exportFailed'), this.i18n.t('common.close'), {
+          duration: 3000,
+        });
         this.exporting.set(false);
       },
     });
@@ -174,9 +189,13 @@ export class EmployeeListComponent implements OnInit {
     });
     ref.afterClosed().subscribe((saved) => {
       if (saved) {
-        this.snackBar.open(this.i18n.t(employee ? 'emp.updated' : 'emp.added'), this.i18n.t('common.ok'), {
-          duration: 2500,
-        });
+        this.snackBar.open(
+          this.i18n.t(employee ? 'emp.updated' : 'emp.added'),
+          this.i18n.t('common.ok'),
+          {
+            duration: 2500,
+          },
+        );
         this.load();
       }
     });
@@ -186,7 +205,10 @@ export class EmployeeListComponent implements OnInit {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: this.i18n.t('emp.deleteTitle'),
-        message: this.i18n.t('emp.deleteMsg', { name: employee.fullName, code: employee.employeeCode }),
+        message: this.i18n.t('emp.deleteMsg', {
+          name: employee.fullName,
+          code: employee.employeeCode,
+        }),
         confirmText: this.i18n.t('common.delete'),
         color: 'warn',
       },
@@ -195,11 +217,17 @@ export class EmployeeListComponent implements OnInit {
       if (ok) {
         this.service.delete(employee.id).subscribe({
           next: () => {
-            this.snackBar.open(this.i18n.t('emp.deleted'), this.i18n.t('common.ok'), { duration: 2500 });
+            this.snackBar.open(this.i18n.t('emp.deleted'), this.i18n.t('common.ok'), {
+              duration: 2500,
+            });
             this.load();
           },
           error: (err) =>
-            this.snackBar.open(err?.error?.message ?? this.i18n.t('common.deleteFailed'), this.i18n.t('common.ok'), { duration: 3000 }),
+            this.snackBar.open(
+              err?.error?.message ?? this.i18n.t('common.deleteFailed'),
+              this.i18n.t('common.ok'),
+              { duration: 3000 },
+            ),
         });
       }
     });

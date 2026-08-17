@@ -40,55 +40,74 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
       @if (loading()) {
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       }
-      <div class="tbl-scroll"><table mat-table [dataSource]="users()" class="w-full">
-        <ng-container matColumnDef="username">
-          <th mat-header-cell *matHeaderCellDef>{{ 'user.col.username' | translate }}</th>
-          <td mat-cell *matCellDef="let u" class="font-medium text-[var(--ink)]">{{ u.username }}</td>
-        </ng-container>
+      <div class="tbl-scroll">
+        <table mat-table [dataSource]="users()" class="w-full">
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>{{ 'user.col.username' | translate }}</th>
+            <td mat-cell *matCellDef="let u" class="font-medium text-[var(--ink)]">
+              {{ u.username }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="roles">
-          <th mat-header-cell *matHeaderCellDef>{{ 'user.col.roles' | translate }}</th>
-          <td mat-cell *matCellDef="let u">
-            <span class="inline-flex flex-wrap gap-1">
-              @for (r of u.roles; track r) {
-                <span class="badge badge-brand">{{ label(r) }}</span>
-              }
-            </span>
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="roles">
+            <th mat-header-cell *matHeaderCellDef>{{ 'user.col.roles' | translate }}</th>
+            <td mat-cell *matCellDef="let u">
+              <span class="inline-flex flex-wrap gap-1">
+                @for (r of u.roles; track r) {
+                  <span class="badge badge-brand">{{ label(r) }}</span>
+                }
+              </span>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="employee">
-          <th mat-header-cell *matHeaderCellDef>{{ 'user.col.employee' | translate }}</th>
-          <td mat-cell *matCellDef="let u">{{ u.employeeName || '—' }}</td>
-        </ng-container>
+          <ng-container matColumnDef="employee">
+            <th mat-header-cell *matHeaderCellDef>{{ 'user.col.employee' | translate }}</th>
+            <td mat-cell *matCellDef="let u">{{ u.employeeName || '—' }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>{{ 'user.col.status' | translate }}</th>
-          <td mat-cell *matCellDef="let u">
-            <span class="badge" [class]="u.enabled ? 'badge-ok' : 'badge-muted'">
-              {{ (u.enabled ? 'user.active' : 'user.locked') | translate }}
-            </span>
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{ 'user.col.status' | translate }}</th>
+            <td mat-cell *matCellDef="let u">
+              <span class="badge" [class]="u.enabled ? 'badge-ok' : 'badge-muted'">
+                {{ (u.enabled ? 'user.active' : 'user.locked') | translate }}
+              </span>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="text-right">{{ 'common.actions' | translate }}</th>
-          <td mat-cell *matCellDef="let u" class="text-right whitespace-nowrap">
-            <button mat-icon-button [matTooltip]="'common.edit' | translate" (click)="openForm(u)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button [matTooltip]="'user.resetPwTip' | translate" (click)="resetPassword(u)">
-              <mat-icon>lock_reset</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" [matTooltip]="'common.delete' | translate" (click)="remove(u)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
+              {{ 'common.actions' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let u" class="text-right whitespace-nowrap">
+              <button
+                mat-icon-button
+                [matTooltip]="'common.edit' | translate"
+                (click)="openForm(u)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                [matTooltip]="'user.resetPwTip' | translate"
+                (click)="resetPassword(u)"
+              >
+                <mat-icon>lock_reset</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                [matTooltip]="'common.delete' | translate"
+                (click)="remove(u)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns"></tr>
-      </table></div>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
 
       @if (!loading() && users().length === 0) {
         <p class="text-center text-[var(--muted)] py-8 m-0">{{ 'user.empty' | translate }}</p>
@@ -124,7 +143,11 @@ export class UserListComponent implements OnInit {
     });
     ref.afterClosed().subscribe((saved) => {
       if (saved) {
-        this.snackBar.open(this.i18n.t(user ? 'user.updated' : 'user.created'), this.i18n.t('common.ok'), { duration: 2500 });
+        this.snackBar.open(
+          this.i18n.t(user ? 'user.updated' : 'user.created'),
+          this.i18n.t('common.ok'),
+          { duration: 2500 },
+        );
         this.load();
       }
     });
@@ -137,7 +160,11 @@ export class UserListComponent implements OnInit {
         title: this.i18n.t('user.resetTitle'),
         message: this.i18n.t('user.resetMsg', { name: u.username }),
         confirmText: this.i18n.t('user.resetConfirm'),
-        prompt: { label: this.i18n.t('user.newPwLabel'), placeholder: this.i18n.t('user.newPwPlaceholder'), required: true },
+        prompt: {
+          label: this.i18n.t('user.newPwLabel'),
+          placeholder: this.i18n.t('user.newPwPlaceholder'),
+          required: true,
+        },
       },
     });
     ref.afterClosed().subscribe((pwd) => {
@@ -147,8 +174,16 @@ export class UserListComponent implements OnInit {
         return;
       }
       this.service.resetPassword(u.id, pwd as string).subscribe({
-        next: () => this.snackBar.open(this.i18n.t('user.pwReset'), this.i18n.t('common.ok'), { duration: 2500 }),
-        error: (err) => this.snackBar.open(err?.error?.message ?? this.i18n.t('user.actionFailed'), this.i18n.t('common.ok'), { duration: 3500 }),
+        next: () =>
+          this.snackBar.open(this.i18n.t('user.pwReset'), this.i18n.t('common.ok'), {
+            duration: 2500,
+          }),
+        error: (err) =>
+          this.snackBar.open(
+            err?.error?.message ?? this.i18n.t('user.actionFailed'),
+            this.i18n.t('common.ok'),
+            { duration: 3500 },
+          ),
       });
     });
   }
@@ -166,10 +201,17 @@ export class UserListComponent implements OnInit {
       if (!ok) return;
       this.service.delete(u.id).subscribe({
         next: () => {
-          this.snackBar.open(this.i18n.t('user.deleted'), this.i18n.t('common.ok'), { duration: 2500 });
+          this.snackBar.open(this.i18n.t('user.deleted'), this.i18n.t('common.ok'), {
+            duration: 2500,
+          });
           this.load();
         },
-        error: (err) => this.snackBar.open(err?.error?.message ?? this.i18n.t('common.deleteFailed'), this.i18n.t('common.ok'), { duration: 3500 }),
+        error: (err) =>
+          this.snackBar.open(
+            err?.error?.message ?? this.i18n.t('common.deleteFailed'),
+            this.i18n.t('common.ok'),
+            { duration: 3500 },
+          ),
       });
     });
   }

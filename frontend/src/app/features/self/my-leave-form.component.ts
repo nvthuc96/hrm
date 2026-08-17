@@ -43,7 +43,9 @@ export interface MyLeaveFormData {
           <mat-label>{{ 'leaveForm.type' | translate }}</mat-label>
           <mat-select formControlName="leaveTypeId">
             @for (t of data.leaveTypes; track t.id) {
-              <mat-option [value]="t.id">{{ t.name }}{{ t.paid ? '' : ('leaveForm.unpaidSuffix' | translate) }}</mat-option>
+              <mat-option [value]="t.id"
+                >{{ t.name }}{{ t.paid ? '' : ('leaveForm.unpaidSuffix' | translate) }}</mat-option
+              >
             }
           </mat-select>
         </mat-form-field>
@@ -57,8 +59,12 @@ export interface MyLeaveFormData {
 
         <mat-form-field appearance="outline">
           <mat-label>{{ 'leaveForm.to' | translate }}</mat-label>
-          <input matInput [matDatepicker]="endPicker" [min]="form.controls.startDate.value"
-            formControlName="endDate" />
+          <input
+            matInput
+            [matDatepicker]="endPicker"
+            [min]="form.controls.startDate.value"
+            formControlName="endDate"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
           <mat-datepicker #endPicker></mat-datepicker>
         </mat-form-field>
@@ -74,7 +80,12 @@ export interface MyLeaveFormData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="ref.close(false)">{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" [disabled]="form.invalid || saving()" (click)="save()">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="form.invalid || saving()"
+        (click)="save()"
+      >
         {{ 'leaveForm.submit' | translate }}
       </button>
     </mat-dialog-actions>

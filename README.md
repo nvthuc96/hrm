@@ -83,3 +83,23 @@ Mỗi pha = 1 Flyway migration mới (V2, V3, V4) + 1 package backend + 1 route 
 - **Tailwind + Material**: đã tắt `preflight` trong `tailwind.config.js` để Tailwind không phá style Material. Material lo component, Tailwind lo layout/spacing.
 - `ddl-auto=validate`: JPA không tự sửa schema — mọi thay đổi bảng đi qua Flyway.
 - Đổi `APP_JWT_SECRET` (≥32 ký tự) và mật khẩu admin trước khi lên production.
+
+## Code style & linting
+
+**Frontend** (`frontend/`):
+
+```bash
+npm run lint          # ESLint (angular-eslint)
+npm run lint:fix      # auto-fix
+npm run format        # Prettier write
+npm run format:check  # Prettier verify (CI)
+```
+
+**Backend** (`backend/`) — Spotless with google-java-format:
+
+```bash
+./mvnw spotless:apply   # format all Java
+./mvnw spotless:check   # verify (CI)
+```
+
+A root `.editorconfig` keeps indentation consistent across editors.

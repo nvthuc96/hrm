@@ -20,7 +20,16 @@ import { forkJoin } from 'rxjs';
 
 // Register only the Chart.js pieces this dashboard uses, from within the lazy
 // dashboard chunk — keeps chart.js out of the eager initial bundle.
-Chart.register(BarController, BarElement, DoughnutController, ArcElement, CategoryScale, LinearScale, Tooltip, Legend);
+Chart.register(
+  BarController,
+  BarElement,
+  DoughnutController,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+);
 import { EmployeeService } from '../../core/employee.service';
 import { DepartmentService } from '../../core/department.service';
 import { PositionService } from '../../core/position.service';
@@ -38,20 +47,50 @@ interface Kpi {
   link?: string;
   queryParams?: Record<string, string>;
 }
-interface BarItem { label: string; value: number; }
-interface StatusSlice { key: string; label: string; value: number; color: string; }
+interface BarItem {
+  label: string;
+  value: number;
+}
+interface StatusSlice {
+  key: string;
+  label: string;
+  value: number;
+  color: string;
+}
 
 // Shared chart cosmetics tuned to the app's design tokens.
 const CHART_FONT = 'Inter, Roboto, "Helvetica Neue", system-ui, sans-serif';
 
-interface ChartPalette { ink: string; muted: string; grid: string; surface: string; }
-const LIGHT_PALETTE: ChartPalette = { ink: '#334155', muted: '#64748b', grid: '#f1f5f9', surface: '#ffffff' };
-const DARK_PALETTE: ChartPalette = { ink: '#c4cdda', muted: '#8b97a8', grid: 'rgba(148,163,184,0.16)', surface: '#161d27' };
+interface ChartPalette {
+  ink: string;
+  muted: string;
+  grid: string;
+  surface: string;
+}
+const LIGHT_PALETTE: ChartPalette = {
+  ink: '#334155',
+  muted: '#64748b',
+  grid: '#f1f5f9',
+  surface: '#ffffff',
+};
+const DARK_PALETTE: ChartPalette = {
+  ink: '#c4cdda',
+  muted: '#8b97a8',
+  grid: 'rgba(148,163,184,0.16)',
+  surface: '#161d27',
+};
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, MatIconModule, MatProgressBarModule, MatTooltipModule, BaseChartDirective, TranslatePipe],
+  imports: [
+    RouterLink,
+    MatIconModule,
+    MatProgressBarModule,
+    MatTooltipModule,
+    BaseChartDirective,
+    TranslatePipe,
+  ],
   template: `
     <div class="page-head">
       <div>
@@ -72,8 +111,10 @@ const DARK_PALETTE: ChartPalette = { ink: '#c4cdda', muted: '#8b97a8', grid: 'rg
           [queryParams]="k.queryParams"
           class="surface no-underline !p-5 flex items-center gap-4 hover:-translate-y-0.5 transition-transform"
         >
-          <span class="grid place-items-center w-12 h-12 rounded-2xl text-white shrink-0"
-            [style.background]="k.accent">
+          <span
+            class="grid place-items-center w-12 h-12 rounded-2xl text-white shrink-0"
+            [style.background]="k.accent"
+          >
             <mat-icon>{{ k.icon }}</mat-icon>
           </span>
           <div class="min-w-0">
@@ -87,42 +128,56 @@ const DARK_PALETTE: ChartPalette = { ink: '#c4cdda', muted: '#8b97a8', grid: 'rg
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Employees by department -->
       <section class="surface !p-6 lg:col-span-2">
-        <h2 class="text-base font-semibold m-0 mb-1 text-[var(--ink)]">{{ 'dash.byDept' | translate }}</h2>
+        <h2 class="text-base font-semibold m-0 mb-1 text-[var(--ink)]">
+          {{ 'dash.byDept' | translate }}
+        </h2>
         <p class="text-xs text-[var(--muted)] mb-3">{{ 'dash.byDept.sub' | translate }}</p>
         @if (byDepartment().length === 0) {
-          <p class="text-sm text-[var(--muted)] py-6 text-center m-0">{{ 'common.noData' | translate }}</p>
+          <p class="text-sm text-[var(--muted)] py-6 text-center m-0">
+            {{ 'common.noData' | translate }}
+          </p>
         } @else {
           <div [style.height.px]="barHeight(byDepartment().length)">
-            <canvas baseChart type="bar"
-              [data]="deptChart()" [options]="barOptions()"></canvas>
+            <canvas baseChart type="bar" [data]="deptChart()" [options]="barOptions()"></canvas>
           </div>
         }
       </section>
 
       <!-- Employees by status (donut) -->
       <section class="surface !p-6">
-        <h2 class="text-base font-semibold m-0 mb-1 text-[var(--ink)]">{{ 'dash.byStatus' | translate }}</h2>
+        <h2 class="text-base font-semibold m-0 mb-1 text-[var(--ink)]">
+          {{ 'dash.byStatus' | translate }}
+        </h2>
         <p class="text-xs text-[var(--muted)] mb-2">{{ 'dash.byStatus.sub' | translate }}</p>
         @if (totalEmployees() === 0) {
-          <p class="text-sm text-[var(--muted)] py-6 text-center m-0">{{ 'common.noData' | translate }}</p>
+          <p class="text-sm text-[var(--muted)] py-6 text-center m-0">
+            {{ 'common.noData' | translate }}
+          </p>
         } @else {
           <div class="h-[260px]">
-            <canvas baseChart type="doughnut"
-              [data]="statusChart()" [options]="donutOptions()"></canvas>
+            <canvas
+              baseChart
+              type="doughnut"
+              [data]="statusChart()"
+              [options]="donutOptions()"
+            ></canvas>
           </div>
         }
       </section>
 
       <!-- By position -->
       <section class="surface !p-6">
-        <h2 class="text-base font-semibold m-0 mb-1 text-[var(--ink)]">{{ 'dash.byPosition' | translate }}</h2>
+        <h2 class="text-base font-semibold m-0 mb-1 text-[var(--ink)]">
+          {{ 'dash.byPosition' | translate }}
+        </h2>
         <p class="text-xs text-[var(--muted)] mb-3">{{ 'dash.byPosition.sub' | translate }}</p>
         @if (byPosition().length === 0) {
-          <p class="text-sm text-[var(--muted)] py-6 text-center m-0">{{ 'common.noData' | translate }}</p>
+          <p class="text-sm text-[var(--muted)] py-6 text-center m-0">
+            {{ 'common.noData' | translate }}
+          </p>
         } @else {
           <div [style.height.px]="barHeight(byPosition().length)">
-            <canvas baseChart type="bar"
-              [data]="posChart()" [options]="barOptions()"></canvas>
+            <canvas baseChart type="bar" [data]="posChart()" [options]="barOptions()"></canvas>
           </div>
         }
       </section>
@@ -131,28 +186,42 @@ const DARK_PALETTE: ChartPalette = { ink: '#c4cdda', muted: '#8b97a8', grid: 'rg
       <section class="surface !p-6 lg:col-span-2">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h2 class="text-base font-semibold m-0 text-[var(--ink)]">{{ 'dash.recent' | translate }}</h2>
+            <h2 class="text-base font-semibold m-0 text-[var(--ink)]">
+              {{ 'dash.recent' | translate }}
+            </h2>
             <p class="text-xs text-[var(--muted)] mt-1 mb-0">{{ 'dash.recent.sub' | translate }}</p>
           </div>
-          <a routerLink="/employees" class="text-sm font-medium text-[var(--brand)] no-underline hover:underline">
+          <a
+            routerLink="/employees"
+            class="text-sm font-medium text-[var(--brand)] no-underline hover:underline"
+          >
             {{ 'dash.viewAll' | translate }}
           </a>
         </div>
         @if (recentHires().length === 0) {
-          <p class="text-sm text-[var(--muted)] py-6 text-center m-0">{{ 'common.noData' | translate }}</p>
+          <p class="text-sm text-[var(--muted)] py-6 text-center m-0">
+            {{ 'common.noData' | translate }}
+          </p>
         } @else {
           <ul class="flex flex-col gap-1 m-0 p-0 list-none">
             @for (e of recentHires(); track e.id) {
-              <li class="flex items-center gap-3 py-2 border-b border-[var(--line-soft)] last:border-0">
-                <span class="grid place-items-center w-9 h-9 rounded-full text-white text-xs font-semibold shrink-0"
-                  style="background: var(--brand-gradient)">{{ initials(e.fullName) }}</span>
+              <li
+                class="flex items-center gap-3 py-2 border-b border-[var(--line-soft)] last:border-0"
+              >
+                <span
+                  class="grid place-items-center w-9 h-9 rounded-full text-white text-xs font-semibold shrink-0"
+                  style="background: var(--brand-gradient)"
+                  >{{ initials(e.fullName) }}</span
+                >
                 <div class="min-w-0">
                   <div class="text-sm font-medium text-[var(--ink)] truncate">{{ e.fullName }}</div>
                   <div class="text-xs text-[var(--muted)] truncate">
                     {{ e.positionName || '—' }} · {{ e.departmentName || '—' }}
                   </div>
                 </div>
-                <div class="ml-auto text-xs text-[var(--muted)] shrink-0">{{ e.hireDate || '' }}</div>
+                <div class="ml-auto text-xs text-[var(--muted)] shrink-0">
+                  {{ e.hireDate || '' }}
+                </div>
               </li>
             }
           </ul>
@@ -176,13 +245,40 @@ export class DashboardComponent implements OnInit {
 
   totalEmployees = computed(() => this.emps().length);
   private onLeaveCount = computed(() => this.emps().filter((e) => e.status === 'ON_LEAVE').length);
-  private pendingLeaves = computed(() => this.leaveReqs().filter((l) => l.status === 'PENDING').length);
+  private pendingLeaves = computed(
+    () => this.leaveReqs().filter((l) => l.status === 'PENDING').length,
+  );
 
   kpis = computed<Kpi[]>(() => [
-    { label: this.i18n.t('dash.kpi.totalEmployees'), value: this.totalEmployees(), icon: 'groups', accent: 'var(--brand-gradient)', link: '/employees' },
-    { label: this.i18n.t('dash.kpi.departments'), value: this.deptCount(), icon: 'apartment', accent: 'linear-gradient(135deg,#0ea5e9,#2563eb)', link: '/departments' },
-    { label: this.i18n.t('dash.kpi.onLeave'), value: this.onLeaveCount(), icon: 'beach_access', accent: 'linear-gradient(135deg,#f59e0b,#d97706)', link: '/employees' },
-    { label: this.i18n.t('dash.kpi.pending'), value: this.pendingLeaves(), icon: 'pending_actions', accent: 'linear-gradient(135deg,#8b5cf6,#6366f1)', link: '/leaves', queryParams: { status: 'PENDING' } },
+    {
+      label: this.i18n.t('dash.kpi.totalEmployees'),
+      value: this.totalEmployees(),
+      icon: 'groups',
+      accent: 'var(--brand-gradient)',
+      link: '/employees',
+    },
+    {
+      label: this.i18n.t('dash.kpi.departments'),
+      value: this.deptCount(),
+      icon: 'apartment',
+      accent: 'linear-gradient(135deg,#0ea5e9,#2563eb)',
+      link: '/departments',
+    },
+    {
+      label: this.i18n.t('dash.kpi.onLeave'),
+      value: this.onLeaveCount(),
+      icon: 'beach_access',
+      accent: 'linear-gradient(135deg,#f59e0b,#d97706)',
+      link: '/employees',
+    },
+    {
+      label: this.i18n.t('dash.kpi.pending'),
+      value: this.pendingLeaves(),
+      icon: 'pending_actions',
+      accent: 'linear-gradient(135deg,#8b5cf6,#6366f1)',
+      link: '/leaves',
+      queryParams: { status: 'PENDING' },
+    },
   ]);
 
   byDepartment = computed<BarItem[]>(() => this.groupBy((e) => e.departmentName));
@@ -198,7 +294,9 @@ export class DashboardComponent implements OnInit {
   });
 
   private theme = inject(ThemeService);
-  private palette = computed<ChartPalette>(() => (this.theme.theme() === 'dark' ? DARK_PALETTE : LIGHT_PALETTE));
+  private palette = computed<ChartPalette>(() =>
+    this.theme.theme() === 'dark' ? DARK_PALETTE : LIGHT_PALETTE,
+  );
 
   // --- Chart.js: options (theme-aware, recompute on light/dark toggle) -------
   barOptions = computed<ChartConfiguration<'bar'>['options']>(() => {
@@ -213,7 +311,9 @@ export class DashboardComponent implements OnInit {
         tooltip: {
           titleFont: { family: CHART_FONT },
           bodyFont: { family: CHART_FONT },
-          callbacks: { label: (c) => ` ${this.i18n.t('dash.chart.employeesUnit', { n: c.parsed.x })}` },
+          callbacks: {
+            label: (c) => ` ${this.i18n.t('dash.chart.employeesUnit', { n: c.parsed.x })}`,
+          },
         },
       },
       scales: {
@@ -251,7 +351,10 @@ export class DashboardComponent implements OnInit {
         },
         tooltip: {
           bodyFont: { family: CHART_FONT },
-          callbacks: { label: (c) => ` ${c.label}: ${this.i18n.t('dash.chart.employeesUnit', { n: c.parsed })}` },
+          callbacks: {
+            label: (c) =>
+              ` ${c.label}: ${this.i18n.t('dash.chart.employeesUnit', { n: c.parsed })}`,
+          },
         },
       },
     };
@@ -299,9 +402,7 @@ export class DashboardComponent implements OnInit {
   }
 
   recentHires = computed<Employee[]>(() =>
-    [...this.emps()]
-      .sort((a, b) => (b.hireDate ?? '').localeCompare(a.hireDate ?? ''))
-      .slice(0, 5),
+    [...this.emps()].sort((a, b) => (b.hireDate ?? '').localeCompare(a.hireDate ?? '')).slice(0, 5),
   );
 
   ngOnInit(): void {

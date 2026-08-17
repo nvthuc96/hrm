@@ -19,14 +19,18 @@ export class NotificationService {
         this.items.set(list);
         this.unread.set(list.filter((n) => !n.read).length);
       },
-      error: () => {},
+      error: () => {
+        /* network error: keep last known state */
+      },
     });
   }
 
   refreshCount(): void {
     this.http.get<{ count: number }>(`${this.api}/unread-count`).subscribe({
       next: (r) => this.unread.set(r.count),
-      error: () => {},
+      error: () => {
+        /* network error: keep last known state */
+      },
     });
   }
 
@@ -38,7 +42,9 @@ export class NotificationService {
         this.items.update((list) => list.map((n) => (n.id === id ? { ...n, read: true } : n)));
         this.unread.update((c) => Math.max(0, c - 1));
       },
-      error: () => {},
+      error: () => {
+        /* network error: keep last known state */
+      },
     });
   }
 
@@ -49,7 +55,9 @@ export class NotificationService {
         this.items.update((list) => list.map((n) => ({ ...n, read: true })));
         this.unread.set(0);
       },
-      error: () => {},
+      error: () => {
+        /* network error: keep last known state */
+      },
     });
   }
 }

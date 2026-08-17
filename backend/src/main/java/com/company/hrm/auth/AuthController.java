@@ -19,43 +19,43 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthService authService;
-    private final AuthCookies authCookies;
+  private final AuthService authService;
+  private final AuthCookies authCookies;
 
-    public AuthController(AuthService authService, AuthCookies authCookies) {
-        this.authService = authService;
-        this.authCookies = authCookies;
-    }
+  public AuthController(AuthService authService, AuthCookies authCookies) {
+    this.authService = authService;
+    this.authCookies = authCookies;
+  }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        return withRefreshCookie(authService.login(request));
-    }
+  @PostMapping("/login")
+  public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    return withRefreshCookie(authService.login(request));
+  }
 
-    /** Rotate using the refresh token from the httpOnly cookie; return a new access token. */
-    @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refresh(
-            @CookieValue(name = AuthCookies.REFRESH_COOKIE, required = false) String refreshToken) {
-        if (refreshToken == null || refreshToken.isBlank()) {
-            throw new BusinessException("Thiếu refresh token");
-        }
-        return withRefreshCookie(authService.refresh(refreshToken));
+  /** Rotate using the refresh token from the httpOnly cookie; return a new access token. */
+  @PostMapping("/refresh")
+  public ResponseEntity<AuthResponse> refresh(
+      @CookieValue(name = AuthCookies.REFRESH_COOKIE, required = false) String refreshToken) {
+    if (refreshToken == null || refreshToken.isBlank()) {
+      throw new BusinessException("Thiếu refresh token");
     }
+    return withRefreshCookie(authService.refresh(refreshToken));
+  }
 
-    /** Revoke the refresh token server-side and clear the cookie. */
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            @CookieValue(name = AuthCookies.REFRESH_COOKIE, required = false) String refreshToken) {
-        authService.logout(refreshToken);
-        return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, authCookies.clear().toString())
-                .build();
-    }
+  /** Revoke the refresh token server-side and clear the cookie. */
+  @PostMapping("/logout")
+  public ResponseEntity<Void> logout(
+      @CookieValue(name = AuthCookies.REFRESH_COOKIE, required = false) String refreshToken) {
+    authService.logout(refreshToken);
+    return ResponseEntity.noContent()
+        .header(HttpHeaders.SET_COOKIE, authCookies.clear().toString())
+        .build();
+  }
 
-    private ResponseEntity<AuthResponse> withRefreshCookie(AuthResult result) {
-        ResponseCookie cookie = authCookies.build(result.refreshToken());
-        return ResponseEntity.status(HttpStatus.OK)
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(result.response());
-    }
+  private ResponseEntity<AuthResponse> withRefreshCookie(AuthResult result) {
+    ResponseCookie cookie = authCookies.build(result.refreshToken());
+    return ResponseEntity.status(HttpStatus.OK)
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .body(result.response());
+  }
 }

@@ -11,18 +11,20 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
-    private static final String SCHEME = "bearerAuth";
+  private static final String SCHEME = "bearerAuth";
 
-    @Bean
-    public OpenAPI hrmOpenAPI() {
-        return new OpenAPI()
-                .info(new Info().title("HRM API").version("v1")
-                        .description("HR Management System API"))
-                .addSecurityItem(new SecurityRequirement().addList(SCHEME))
-                .components(new Components().addSecuritySchemes(SCHEME,
-                        new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")));
-    }
+  @Bean
+  public OpenAPI hrmOpenAPI() {
+    return new OpenAPI()
+        .info(new Info().title("HRM API").version("v1").description("HR Management System API"))
+        .addSecurityItem(new SecurityRequirement().addList(SCHEME))
+        .components(
+            new Components()
+                .addSecuritySchemes(
+                    SCHEME,
+                    new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")));
+  }
 }

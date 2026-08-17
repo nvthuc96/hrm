@@ -31,8 +31,10 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
         class="relative hidden lg:flex flex-col justify-between p-12 text-white overflow-hidden"
         style="background: var(--brand-gradient)"
       >
-        <div class="absolute inset-0 opacity-30"
-             style="background: radial-gradient(600px 300px at 80% 10%, rgba(255,255,255,.4), transparent 60%), radial-gradient(500px 300px at 10% 90%, rgba(255,255,255,.25), transparent 55%)"></div>
+        <div
+          class="absolute inset-0 opacity-30"
+          style="background: radial-gradient(600px 300px at 80% 10%, rgba(255,255,255,.4), transparent 60%), radial-gradient(500px 300px at 10% 90%, rgba(255,255,255,.25), transparent 55%)"
+        ></div>
         <div class="relative flex items-center gap-3">
           <span class="grid place-items-center w-11 h-11 rounded-2xl bg-white/20 backdrop-blur">
             <mat-icon class="!text-[24px] !w-6 !h-6">groups</mat-icon>
@@ -40,7 +42,9 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
           <span class="text-xl font-bold tracking-tight">HRM</span>
         </div>
         <div class="relative">
-          <h1 class="text-4xl font-bold leading-tight tracking-tight" style="white-space: pre-line">{{ 'login.heroTitle' | translate }}</h1>
+          <h1 class="text-4xl font-bold leading-tight tracking-tight" style="white-space: pre-line">
+            {{ 'login.heroTitle' | translate }}
+          </h1>
           <p class="mt-4 text-white/80 max-w-sm">
             {{ 'login.heroSub' | translate }}
           </p>
@@ -50,8 +54,11 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
       <!-- Form side -->
       <div class="relative flex items-center justify-center p-4 sm:p-6 min-w-0">
-        <button type="button" (click)="i18n.toggle()"
-          class="absolute top-4 right-4 text-sm font-semibold text-[var(--muted)] hover:text-[var(--brand)] px-2 py-1 rounded-lg">
+        <button
+          type="button"
+          (click)="i18n.toggle()"
+          class="absolute top-4 right-4 text-sm font-semibold text-[var(--muted)] hover:text-[var(--brand)] px-2 py-1 rounded-lg"
+        >
           {{ i18n.lang() === 'vi' ? 'EN' : 'VI' }}
         </button>
         <mat-card class="w-full max-w-sm min-w-0 !shadow-none !border-0 lg:!shadow-md lg:!border">
@@ -60,7 +67,10 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
           }
           <mat-card-content class="!p-6 sm:!p-8">
             <div class="lg:hidden flex items-center gap-3 mb-6">
-              <span class="grid place-items-center w-10 h-10 rounded-xl text-white" style="background: var(--brand-gradient)">
+              <span
+                class="grid place-items-center w-10 h-10 rounded-xl text-white"
+                style="background: var(--brand-gradient)"
+              >
                 <mat-icon class="!text-[22px] !w-[22px] !h-[22px]">groups</mat-icon>
               </span>
               <span class="text-lg font-bold">HRM</span>
@@ -77,7 +87,12 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'login.password' | translate }}</mat-label>
-                <input matInput type="password" formControlName="password" autocomplete="current-password" />
+                <input
+                  matInput
+                  type="password"
+                  formControlName="password"
+                  autocomplete="current-password"
+                />
                 <mat-icon matPrefix class="!text-[var(--muted)] mr-1">lock</mat-icon>
               </mat-form-field>
               @if (error()) {
@@ -96,7 +111,8 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
                 {{ 'login.submit' | translate }}
               </button>
               <p class="text-xs text-[var(--muted)] text-center mt-3 mb-0">
-                {{ 'login.defaultHint' | translate }} <span class="font-medium">admin / admin123</span>
+                {{ 'login.defaultHint' | translate }}
+                <span class="font-medium">admin / admin123</span>
               </p>
             </form>
           </mat-card-content>

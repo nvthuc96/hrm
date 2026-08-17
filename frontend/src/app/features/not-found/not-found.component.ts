@@ -34,7 +34,12 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <button mat-flat-button color="primary" class="!h-11 w-full sm:w-auto" [routerLink]="home">
+          <button
+            mat-flat-button
+            color="primary"
+            class="!h-11 w-full sm:w-auto"
+            [routerLink]="home"
+          >
             <mat-icon>home</mat-icon> {{ 'notFound.home' | translate }}
           </button>
           <button mat-stroked-button class="!h-11 w-full sm:w-auto" (click)="back()">

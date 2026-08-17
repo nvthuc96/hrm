@@ -46,22 +46,36 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
         <mat-label>{{ 'pay.period' | translate }}</mat-label>
         <mat-select [formControl]="periodCtrl">
           @for (p of periods(); track p.id) {
-            <mat-option [value]="p.id">{{ p.month }}/{{ p.year }} ({{ 'periodStatus.' + p.status | translate }})</mat-option>
+            <mat-option [value]="p.id"
+              >{{ p.month }}/{{ p.year }} ({{ 'periodStatus.' + p.status | translate }})</mat-option
+            >
           }
         </mat-select>
       </mat-form-field>
 
       @if (currentPeriod(); as p) {
-        <button mat-flat-button color="primary" [disabled]="p.status === 'LOCKED' || loading()"
-                (click)="generate()">
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="p.status === 'LOCKED' || loading()"
+          (click)="generate()"
+        >
           <mat-icon>calculate</mat-icon> {{ 'pay.generate' | translate }}
         </button>
         @if (p.status === 'OPEN') {
-          <button mat-stroked-button (click)="lock(p)"><mat-icon>lock</mat-icon> {{ 'pay.lock' | translate }}</button>
+          <button mat-stroked-button (click)="lock(p)">
+            <mat-icon>lock</mat-icon> {{ 'pay.lock' | translate }}
+          </button>
         } @else {
-          <button mat-stroked-button (click)="unlock(p)"><mat-icon>lock_open</mat-icon> {{ 'pay.unlock' | translate }}</button>
+          <button mat-stroked-button (click)="unlock(p)">
+            <mat-icon>lock_open</mat-icon> {{ 'pay.unlock' | translate }}
+          </button>
         }
-        <button mat-stroked-button [disabled]="!payslips().length || exporting()" (click)="exportExcel()">
+        <button
+          mat-stroked-button
+          [disabled]="!payslips().length || exporting()"
+          (click)="exportExcel()"
+        >
           <mat-icon>download</mat-icon> {{ 'common.exportExcel' | translate }}
         </button>
       }
@@ -79,8 +93,9 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
     @if (payslips().length) {
       <div class="mb-3 text-sm text-[var(--ink-soft)]">
-        {{ 'pay.totalNet' | translate }} <span class="font-semibold">{{ totalNet() | localeNumber }} ₫</span>
-        · {{ 'pay.employeesSuffix' | translate:{ n: payslips().length } }}
+        {{ 'pay.totalNet' | translate }}
+        <span class="font-semibold">{{ totalNet() | localeNumber }} ₫</span> ·
+        {{ 'pay.employeesSuffix' | translate: { n: payslips().length } }}
       </div>
     }
 
@@ -88,49 +103,69 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
       @if (loading()) {
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       }
-      <div class="tbl-scroll"><table mat-table [dataSource]="payslips()" class="w-full">
-        <ng-container matColumnDef="employee">
-          <th mat-header-cell *matHeaderCellDef>{{ 'pay.col.employee' | translate }}</th>
-          <td mat-cell *matCellDef="let s">{{ s.employeeName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="workingDays">
-          <th mat-header-cell *matHeaderCellDef>{{ 'pay.col.workingDays' | translate }}</th>
-          <td mat-cell *matCellDef="let s">{{ s.workingDays }}</td>
-        </ng-container>
-        <ng-container matColumnDef="baseSalary">
-          <th mat-header-cell *matHeaderCellDef class="text-right">{{ 'pay.col.base' | translate }}</th>
-          <td mat-cell *matCellDef="let s" class="text-right">{{ s.baseSalary | localeNumber }}</td>
-        </ng-container>
-        <ng-container matColumnDef="gross">
-          <th mat-header-cell *matHeaderCellDef class="text-right">{{ 'pay.col.gross' | translate }}</th>
-          <td mat-cell *matCellDef="let s" class="text-right">{{ s.gross | localeNumber }}</td>
-        </ng-container>
-        <ng-container matColumnDef="insurance">
-          <th mat-header-cell *matHeaderCellDef class="text-right">{{ 'pay.col.insurance' | translate }}</th>
-          <td mat-cell *matCellDef="let s" class="text-right">{{ s.insurance | localeNumber }}</td>
-        </ng-container>
-        <ng-container matColumnDef="tax">
-          <th mat-header-cell *matHeaderCellDef class="text-right">{{ 'pay.col.tax' | translate }}</th>
-          <td mat-cell *matCellDef="let s" class="text-right">{{ s.tax | localeNumber }}</td>
-        </ng-container>
-        <ng-container matColumnDef="netSalary">
-          <th mat-header-cell *matHeaderCellDef class="text-right">{{ 'pay.col.net' | translate }}</th>
-          <td mat-cell *matCellDef="let s" class="text-right font-medium text-blue-700">
-            {{ s.netSalary | localeNumber }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="text-right"></th>
-          <td mat-cell *matCellDef="let s" class="text-right">
-            <button mat-icon-button [matTooltip]="'pay.viewSlip' | translate" (click)="viewDetail(s)">
-              <mat-icon>receipt_long</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+      <div class="tbl-scroll">
+        <table mat-table [dataSource]="payslips()" class="w-full">
+          <ng-container matColumnDef="employee">
+            <th mat-header-cell *matHeaderCellDef>{{ 'pay.col.employee' | translate }}</th>
+            <td mat-cell *matCellDef="let s">{{ s.employeeName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="workingDays">
+            <th mat-header-cell *matHeaderCellDef>{{ 'pay.col.workingDays' | translate }}</th>
+            <td mat-cell *matCellDef="let s">{{ s.workingDays }}</td>
+          </ng-container>
+          <ng-container matColumnDef="baseSalary">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
+              {{ 'pay.col.base' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let s" class="text-right">
+              {{ s.baseSalary | localeNumber }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="gross">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
+              {{ 'pay.col.gross' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let s" class="text-right">{{ s.gross | localeNumber }}</td>
+          </ng-container>
+          <ng-container matColumnDef="insurance">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
+              {{ 'pay.col.insurance' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let s" class="text-right">
+              {{ s.insurance | localeNumber }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="tax">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
+              {{ 'pay.col.tax' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let s" class="text-right">{{ s.tax | localeNumber }}</td>
+          </ng-container>
+          <ng-container matColumnDef="netSalary">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
+              {{ 'pay.col.net' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let s" class="text-right font-medium text-blue-700">
+              {{ s.netSalary | localeNumber }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="text-right"></th>
+            <td mat-cell *matCellDef="let s" class="text-right">
+              <button
+                mat-icon-button
+                [matTooltip]="'pay.viewSlip' | translate"
+                (click)="viewDetail(s)"
+              >
+                <mat-icon>receipt_long</mat-icon>
+              </button>
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns"></tr>
-      </table></div>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
 
       @if (!loading() && payslips().length === 0) {
         <p class="text-center text-[var(--muted)] py-8 m-0">
@@ -146,7 +181,16 @@ export class PayrollListComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private i18n = inject(I18nService);
 
-  columns = ['employee', 'workingDays', 'baseSalary', 'gross', 'insurance', 'tax', 'netSalary', 'actions'];
+  columns = [
+    'employee',
+    'workingDays',
+    'baseSalary',
+    'gross',
+    'insurance',
+    'tax',
+    'netSalary',
+    'actions',
+  ];
   periods = signal<PayrollPeriod[]>([]);
   payslips = signal<Payslip[]>([]);
   loading = signal(false);
@@ -155,7 +199,9 @@ export class PayrollListComponent implements OnInit {
   periodCtrl = new FormControl<number | null>(null);
   newPeriodCtrl = new FormControl<string>(this.currentMonth(), { nonNullable: true });
 
-  currentPeriod = computed(() => this.periods().find((p) => p.id === this.periodCtrl.value) ?? null);
+  currentPeriod = computed(
+    () => this.periods().find((p) => p.id === this.periodCtrl.value) ?? null,
+  );
   totalNet = computed(() => this.payslips().reduce((sum, s) => sum + s.netSalary, 0));
 
   ngOnInit(): void {
@@ -174,7 +220,9 @@ export class PayrollListComponent implements OnInit {
         this.exporting.set(false);
       },
       error: () => {
-        this.snackBar.open(this.i18n.t('common.exportFailed'), this.i18n.t('common.close'), { duration: 3000 });
+        this.snackBar.open(this.i18n.t('common.exportFailed'), this.i18n.t('common.close'), {
+          duration: 3000,
+        });
         this.exporting.set(false);
       },
     });
@@ -186,11 +234,19 @@ export class PayrollListComponent implements OnInit {
     const [year, month] = val.split('-').map(Number);
     this.service.createPeriod(month, year).subscribe({
       next: (p) => {
-        this.snackBar.open(this.i18n.t('pay.periodCreated', { m: p.month, y: p.year }), this.i18n.t('common.ok'), { duration: 2500 });
+        this.snackBar.open(
+          this.i18n.t('pay.periodCreated', { m: p.month, y: p.year }),
+          this.i18n.t('common.ok'),
+          { duration: 2500 },
+        );
         this.loadPeriods(p.id);
       },
       error: (err) =>
-        this.snackBar.open(err?.error?.message ?? this.i18n.t('pay.createPeriodFailed'), this.i18n.t('common.ok'), { duration: 3000 }),
+        this.snackBar.open(
+          err?.error?.message ?? this.i18n.t('pay.createPeriodFailed'),
+          this.i18n.t('common.ok'),
+          { duration: 3000 },
+        ),
     });
   }
 
@@ -202,11 +258,19 @@ export class PayrollListComponent implements OnInit {
       next: (slips) => {
         this.payslips.set(slips);
         this.loading.set(false);
-        this.snackBar.open(this.i18n.t('pay.generated', { n: slips.length }), this.i18n.t('common.ok'), { duration: 2500 });
+        this.snackBar.open(
+          this.i18n.t('pay.generated', { n: slips.length }),
+          this.i18n.t('common.ok'),
+          { duration: 2500 },
+        );
       },
       error: (err) => {
         this.loading.set(false);
-        this.snackBar.open(err?.error?.message ?? this.i18n.t('pay.generateFailed'), this.i18n.t('common.ok'), { duration: 3000 });
+        this.snackBar.open(
+          err?.error?.message ?? this.i18n.t('pay.generateFailed'),
+          this.i18n.t('common.ok'),
+          { duration: 3000 },
+        );
       },
     });
   }

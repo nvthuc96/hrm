@@ -63,16 +63,26 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
     @if (monthly(); as m) {
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
-        <mat-card class="p-3"><div class="text-xs text-[var(--muted)]">{{ 'att.sum.present' | translate }}</div>
-          <div class="text-2xl font-medium">{{ m.summary.presentDays }}</div></mat-card>
-        <mat-card class="p-3"><div class="text-xs text-[var(--muted)]">{{ 'att.sum.absent' | translate }}</div>
-          <div class="text-2xl font-medium">{{ m.summary.absentDays }}</div></mat-card>
-        <mat-card class="p-3"><div class="text-xs text-[var(--muted)]">{{ 'att.sum.leave' | translate }}</div>
-          <div class="text-2xl font-medium">{{ m.summary.leaveDays }}</div></mat-card>
-        <mat-card class="p-3"><div class="text-xs text-[var(--muted)]">{{ 'att.sum.hours' | translate }}</div>
-          <div class="text-2xl font-medium">{{ m.summary.totalWorkedHours }}</div></mat-card>
-        <mat-card class="p-3"><div class="text-xs text-[var(--muted)]">{{ 'att.sum.ot' | translate }}</div>
-          <div class="text-2xl font-medium">{{ m.summary.totalOtHours }}</div></mat-card>
+        <mat-card class="p-3"
+          ><div class="text-xs text-[var(--muted)]">{{ 'att.sum.present' | translate }}</div>
+          <div class="text-2xl font-medium">{{ m.summary.presentDays }}</div></mat-card
+        >
+        <mat-card class="p-3"
+          ><div class="text-xs text-[var(--muted)]">{{ 'att.sum.absent' | translate }}</div>
+          <div class="text-2xl font-medium">{{ m.summary.absentDays }}</div></mat-card
+        >
+        <mat-card class="p-3"
+          ><div class="text-xs text-[var(--muted)]">{{ 'att.sum.leave' | translate }}</div>
+          <div class="text-2xl font-medium">{{ m.summary.leaveDays }}</div></mat-card
+        >
+        <mat-card class="p-3"
+          ><div class="text-xs text-[var(--muted)]">{{ 'att.sum.hours' | translate }}</div>
+          <div class="text-2xl font-medium">{{ m.summary.totalWorkedHours }}</div></mat-card
+        >
+        <mat-card class="p-3"
+          ><div class="text-xs text-[var(--muted)]">{{ 'att.sum.ot' | translate }}</div>
+          <div class="text-2xl font-medium">{{ m.summary.totalOtHours }}</div></mat-card
+        >
       </div>
     }
 
@@ -80,48 +90,63 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
       @if (loading()) {
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       }
-      <div class="tbl-scroll"><table mat-table [dataSource]="records()" class="w-full">
-        <ng-container matColumnDef="workDate">
-          <th mat-header-cell *matHeaderCellDef>{{ 'att.col.date' | translate }}</th>
-          <td mat-cell *matCellDef="let a">{{ a.workDate }}</td>
-        </ng-container>
-        <ng-container matColumnDef="checkIn">
-          <th mat-header-cell *matHeaderCellDef>{{ 'att.col.in' | translate }}</th>
-          <td mat-cell *matCellDef="let a">{{ (a.checkIn || '—').substring(0, 5) }}</td>
-        </ng-container>
-        <ng-container matColumnDef="checkOut">
-          <th mat-header-cell *matHeaderCellDef>{{ 'att.col.out' | translate }}</th>
-          <td mat-cell *matCellDef="let a">{{ (a.checkOut || '—').substring(0, 5) }}</td>
-        </ng-container>
-        <ng-container matColumnDef="workedHours">
-          <th mat-header-cell *matHeaderCellDef>{{ 'att.col.worked' | translate }}</th>
-          <td mat-cell *matCellDef="let a">{{ a.workedHours }}</td>
-        </ng-container>
-        <ng-container matColumnDef="otHours">
-          <th mat-header-cell *matHeaderCellDef>{{ 'att.col.ot' | translate }}</th>
-          <td mat-cell *matCellDef="let a">{{ a.otHours }}</td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>{{ 'att.col.status' | translate }}</th>
-          <td mat-cell *matCellDef="let a">
-            <mat-chip [highlighted]="a.status === 'PRESENT'">{{ 'attStatus.' + a.status | translate }}</mat-chip>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="text-right">{{ 'common.actions' | translate }}</th>
-          <td mat-cell *matCellDef="let a" class="text-right">
-            <button mat-icon-button [matTooltip]="'common.edit' | translate" (click)="openForm(a)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" [matTooltip]="'common.delete' | translate" (click)="confirmDelete(a)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+      <div class="tbl-scroll">
+        <table mat-table [dataSource]="records()" class="w-full">
+          <ng-container matColumnDef="workDate">
+            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.date' | translate }}</th>
+            <td mat-cell *matCellDef="let a">{{ a.workDate }}</td>
+          </ng-container>
+          <ng-container matColumnDef="checkIn">
+            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.in' | translate }}</th>
+            <td mat-cell *matCellDef="let a">{{ (a.checkIn || '—').substring(0, 5) }}</td>
+          </ng-container>
+          <ng-container matColumnDef="checkOut">
+            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.out' | translate }}</th>
+            <td mat-cell *matCellDef="let a">{{ (a.checkOut || '—').substring(0, 5) }}</td>
+          </ng-container>
+          <ng-container matColumnDef="workedHours">
+            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.worked' | translate }}</th>
+            <td mat-cell *matCellDef="let a">{{ a.workedHours }}</td>
+          </ng-container>
+          <ng-container matColumnDef="otHours">
+            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.ot' | translate }}</th>
+            <td mat-cell *matCellDef="let a">{{ a.otHours }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.status' | translate }}</th>
+            <td mat-cell *matCellDef="let a">
+              <mat-chip [highlighted]="a.status === 'PRESENT'">{{
+                'attStatus.' + a.status | translate
+              }}</mat-chip>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
+              {{ 'common.actions' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let a" class="text-right">
+              <button
+                mat-icon-button
+                [matTooltip]="'common.edit' | translate"
+                (click)="openForm(a)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                [matTooltip]="'common.delete' | translate"
+                (click)="confirmDelete(a)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns"></tr>
-      </table></div>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
 
       @if (!loading() && records().length === 0) {
         <p class="text-center text-[var(--muted)] py-8 m-0">
@@ -166,7 +191,11 @@ export class AttendanceListComponent implements OnInit {
     });
     ref.afterClosed().subscribe((saved) => {
       if (saved) {
-        this.snackBar.open(this.i18n.t(attendance ? 'att.updated' : 'att.added'), this.i18n.t('common.ok'), { duration: 2500 });
+        this.snackBar.open(
+          this.i18n.t(attendance ? 'att.updated' : 'att.added'),
+          this.i18n.t('common.ok'),
+          { duration: 2500 },
+        );
         this.load();
       }
     });
@@ -185,11 +214,17 @@ export class AttendanceListComponent implements OnInit {
       if (ok) {
         this.attendanceService.delete(a.id).subscribe({
           next: () => {
-            this.snackBar.open(this.i18n.t('att.deleted'), this.i18n.t('common.ok'), { duration: 2500 });
+            this.snackBar.open(this.i18n.t('att.deleted'), this.i18n.t('common.ok'), {
+              duration: 2500,
+            });
             this.load();
           },
           error: (err) =>
-            this.snackBar.open(err?.error?.message ?? this.i18n.t('common.deleteFailed'), this.i18n.t('common.ok'), { duration: 3000 }),
+            this.snackBar.open(
+              err?.error?.message ?? this.i18n.t('common.deleteFailed'),
+              this.i18n.t('common.ok'),
+              { duration: 3000 },
+            ),
         });
       }
     });

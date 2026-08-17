@@ -25,50 +25,50 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/employees")
 public class EmployeeController {
 
-    private final EmployeeService employeeService;
+  private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
-    }
+  public EmployeeController(EmployeeService employeeService) {
+    this.employeeService = employeeService;
+  }
 
-    @GetMapping
-    public PageResponse<EmployeeResponse> search(
-            @RequestParam(required = false) String q,
-            @RequestParam(required = false) Long departmentId,
-            @PageableDefault(size = 20) Pageable pageable) {
-        return employeeService.search(q, departmentId, pageable);
-    }
+  @GetMapping
+  public PageResponse<EmployeeResponse> search(
+      @RequestParam(required = false) String q,
+      @RequestParam(required = false) Long departmentId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    return employeeService.search(q, departmentId, pageable);
+  }
 
-    @GetMapping("/export")
-    public ResponseEntity<byte[]> export(
-            @RequestParam(required = false) String q,
-            @RequestParam(required = false) Long departmentId) {
-        byte[] body = employeeService.exportXlsx(q, departmentId);
-        return ExportResponse.xlsx(body, "nhan-vien.xlsx");
-    }
+  @GetMapping("/export")
+  public ResponseEntity<byte[]> export(
+      @RequestParam(required = false) String q, @RequestParam(required = false) Long departmentId) {
+    byte[] body = employeeService.exportXlsx(q, departmentId);
+    return ExportResponse.xlsx(body, "nhan-vien.xlsx");
+  }
 
-    @GetMapping("/{id}")
-    public EmployeeResponse getById(@PathVariable Long id) {
-        return employeeService.getById(id);
-    }
+  @GetMapping("/{id}")
+  public EmployeeResponse getById(@PathVariable Long id) {
+    return employeeService.getById(id);
+  }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN','HR')")
-    public EmployeeResponse create(@Valid @RequestBody EmployeeRequest request) {
-        return employeeService.create(request);
-    }
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  @PreAuthorize("hasAnyRole('ADMIN','HR')")
+  public EmployeeResponse create(@Valid @RequestBody EmployeeRequest request) {
+    return employeeService.create(request);
+  }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','HR')")
-    public EmployeeResponse update(@PathVariable Long id, @Valid @RequestBody EmployeeRequest request) {
-        return employeeService.update(id, request);
-    }
+  @PutMapping("/{id}")
+  @PreAuthorize("hasAnyRole('ADMIN','HR')")
+  public EmployeeResponse update(
+      @PathVariable Long id, @Valid @RequestBody EmployeeRequest request) {
+    return employeeService.update(id, request);
+  }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
-    public void delete(@PathVariable Long id) {
-        employeeService.delete(id);
-    }
+  @DeleteMapping("/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @PreAuthorize("hasRole('ADMIN')")
+  public void delete(@PathVariable Long id) {
+    employeeService.delete(id);
+  }
 }

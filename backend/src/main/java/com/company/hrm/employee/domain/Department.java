@@ -15,13 +15,13 @@ import lombok.Setter;
 @Table(name = "department")
 public class Department extends BaseEntity {
 
-    @Column(nullable = false)
-    private String name;
+  @Column(nullable = false)
+  private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Department parent;
+  @ManyToOne
+  @JoinColumn(name = "parent_id")
+  private Department parent;
 
-    @Column(name = "manager_id")
-    private Long managerId;
+  @Column(name = "manager_id")
+  private Long managerId;
 }

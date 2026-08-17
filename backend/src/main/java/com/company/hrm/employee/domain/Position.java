@@ -13,9 +13,9 @@ import lombok.Setter;
 @Table(name = "position")
 public class Position extends BaseEntity {
 
-    @Column(nullable = false)
-    private String name;
+  @Column(nullable = false)
+  private String name;
 
-    @Column(nullable = false)
-    private int level = 1;
+  @Column(nullable = false)
+  private int level = 1;
 }

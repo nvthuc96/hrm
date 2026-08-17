@@ -51,16 +51,26 @@ const BADGE: Record<string, string> = {
     } @else {
       @if (monthly(); as m) {
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
-          <mat-card class="p-3"><div class="text-xs text-[var(--muted)]">{{ 'att.sum.present' | translate }}</div>
-            <div class="text-2xl font-medium">{{ m.summary.presentDays }}</div></mat-card>
-          <mat-card class="p-3"><div class="text-xs text-[var(--muted)]">{{ 'att.sum.absent' | translate }}</div>
-            <div class="text-2xl font-medium">{{ m.summary.absentDays }}</div></mat-card>
-          <mat-card class="p-3"><div class="text-xs text-[var(--muted)]">{{ 'att.sum.leave' | translate }}</div>
-            <div class="text-2xl font-medium">{{ m.summary.leaveDays }}</div></mat-card>
-          <mat-card class="p-3"><div class="text-xs text-[var(--muted)]">{{ 'att.sum.hours' | translate }}</div>
-            <div class="text-2xl font-medium">{{ m.summary.totalWorkedHours }}</div></mat-card>
-          <mat-card class="p-3"><div class="text-xs text-[var(--muted)]">{{ 'att.sum.ot' | translate }}</div>
-            <div class="text-2xl font-medium">{{ m.summary.totalOtHours }}</div></mat-card>
+          <mat-card class="p-3"
+            ><div class="text-xs text-[var(--muted)]">{{ 'att.sum.present' | translate }}</div>
+            <div class="text-2xl font-medium">{{ m.summary.presentDays }}</div></mat-card
+          >
+          <mat-card class="p-3"
+            ><div class="text-xs text-[var(--muted)]">{{ 'att.sum.absent' | translate }}</div>
+            <div class="text-2xl font-medium">{{ m.summary.absentDays }}</div></mat-card
+          >
+          <mat-card class="p-3"
+            ><div class="text-xs text-[var(--muted)]">{{ 'att.sum.leave' | translate }}</div>
+            <div class="text-2xl font-medium">{{ m.summary.leaveDays }}</div></mat-card
+          >
+          <mat-card class="p-3"
+            ><div class="text-xs text-[var(--muted)]">{{ 'att.sum.hours' | translate }}</div>
+            <div class="text-2xl font-medium">{{ m.summary.totalWorkedHours }}</div></mat-card
+          >
+          <mat-card class="p-3"
+            ><div class="text-xs text-[var(--muted)]">{{ 'att.sum.ot' | translate }}</div>
+            <div class="text-2xl font-medium">{{ m.summary.totalOtHours }}</div></mat-card
+          >
         </div>
       }
 
@@ -68,44 +78,50 @@ const BADGE: Record<string, string> = {
         @if (loading()) {
           <mat-progress-bar mode="indeterminate"></mat-progress-bar>
         }
-        <div class="tbl-scroll"><table mat-table [dataSource]="records()" class="w-full">
-          <ng-container matColumnDef="workDate">
-            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.date' | translate }}</th>
-            <td mat-cell *matCellDef="let a">{{ a.workDate }}</td>
-          </ng-container>
-          <ng-container matColumnDef="checkIn">
-            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.in' | translate }}</th>
-            <td mat-cell *matCellDef="let a">{{ (a.checkIn || '—').substring(0, 5) }}</td>
-          </ng-container>
-          <ng-container matColumnDef="checkOut">
-            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.out' | translate }}</th>
-            <td mat-cell *matCellDef="let a">{{ (a.checkOut || '—').substring(0, 5) }}</td>
-          </ng-container>
-          <ng-container matColumnDef="workedHours">
-            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.worked' | translate }}</th>
-            <td mat-cell *matCellDef="let a">{{ a.workedHours }}</td>
-          </ng-container>
-          <ng-container matColumnDef="otHours">
-            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.ot' | translate }}</th>
-            <td mat-cell *matCellDef="let a">{{ a.otHours }}</td>
-          </ng-container>
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>{{ 'att.col.status' | translate }}</th>
-            <td mat-cell *matCellDef="let a">
-              <span class="badge" [class]="badge(a.status)">{{ 'attStatus.' + a.status | translate }}</span>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="note">
-            <th mat-header-cell *matHeaderCellDef>{{ 'me.att.noteCol' | translate }}</th>
-            <td mat-cell *matCellDef="let a">{{ a.note || '—' }}</td>
-          </ng-container>
+        <div class="tbl-scroll">
+          <table mat-table [dataSource]="records()" class="w-full">
+            <ng-container matColumnDef="workDate">
+              <th mat-header-cell *matHeaderCellDef>{{ 'att.col.date' | translate }}</th>
+              <td mat-cell *matCellDef="let a">{{ a.workDate }}</td>
+            </ng-container>
+            <ng-container matColumnDef="checkIn">
+              <th mat-header-cell *matHeaderCellDef>{{ 'att.col.in' | translate }}</th>
+              <td mat-cell *matCellDef="let a">{{ (a.checkIn || '—').substring(0, 5) }}</td>
+            </ng-container>
+            <ng-container matColumnDef="checkOut">
+              <th mat-header-cell *matHeaderCellDef>{{ 'att.col.out' | translate }}</th>
+              <td mat-cell *matCellDef="let a">{{ (a.checkOut || '—').substring(0, 5) }}</td>
+            </ng-container>
+            <ng-container matColumnDef="workedHours">
+              <th mat-header-cell *matHeaderCellDef>{{ 'att.col.worked' | translate }}</th>
+              <td mat-cell *matCellDef="let a">{{ a.workedHours }}</td>
+            </ng-container>
+            <ng-container matColumnDef="otHours">
+              <th mat-header-cell *matHeaderCellDef>{{ 'att.col.ot' | translate }}</th>
+              <td mat-cell *matCellDef="let a">{{ a.otHours }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>{{ 'att.col.status' | translate }}</th>
+              <td mat-cell *matCellDef="let a">
+                <span class="badge" [class]="badge(a.status)">{{
+                  'attStatus.' + a.status | translate
+                }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="note">
+              <th mat-header-cell *matHeaderCellDef>{{ 'me.att.noteCol' | translate }}</th>
+              <td mat-cell *matCellDef="let a">{{ a.note || '—' }}</td>
+            </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="columns"></tr>
-          <tr mat-row *matRowDef="let row; columns: columns"></tr>
-        </table></div>
+            <tr mat-header-row *matHeaderRowDef="columns"></tr>
+            <tr mat-row *matRowDef="let row; columns: columns"></tr>
+          </table>
+        </div>
 
         @if (!loading() && records().length === 0) {
-          <p class="text-center text-[var(--muted)] py-8 m-0">{{ 'att.emptyWithEmp' | translate }}</p>
+          <p class="text-center text-[var(--muted)] py-8 m-0">
+            {{ 'att.emptyWithEmp' | translate }}
+          </p>
         }
       </div>
     }

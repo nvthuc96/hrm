@@ -62,7 +62,12 @@ export interface DepartmentFormData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="ref.close(false)">{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" [disabled]="form.invalid || saving()" (click)="save()">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="form.invalid || saving()"
+        (click)="save()"
+      >
         {{ 'common.save' | translate }}
       </button>
     </mat-dialog-actions>

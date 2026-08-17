@@ -1,7 +1,10 @@
 import { Payslip } from './models';
 
 const esc = (s: string) =>
-  (s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  (s ?? '').replace(
+    /[&<>"]/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!,
+  );
 
 /** Translator signature compatible with I18nService.t */
 export type Translate = (key: string, params?: Record<string, string | number>) => string;

@@ -47,7 +47,12 @@ export interface UserFormData {
         @if (!isEdit) {
           <mat-form-field appearance="outline">
             <mat-label>{{ 'user.f.password' | translate }}</mat-label>
-            <input matInput type="password" formControlName="password" autocomplete="new-password" />
+            <input
+              matInput
+              type="password"
+              formControlName="password"
+              autocomplete="new-password"
+            />
             @if (form.controls.password.hasError('minlength')) {
               <mat-error>{{ 'user.f.pwMinErr' | translate }}</mat-error>
             }
@@ -83,7 +88,12 @@ export interface UserFormData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="ref.close(false)">{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" [disabled]="form.invalid || saving()" (click)="save()">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="form.invalid || saving()"
+        (click)="save()"
+      >
         {{ 'common.save' | translate }}
       </button>
     </mat-dialog-actions>
@@ -101,7 +111,10 @@ export class UserFormComponent {
   error = signal<string | null>(null);
 
   form = this.fb.nonNullable.group({
-    username: [{ value: this.data.user?.username ?? '', disabled: this.isEdit }, Validators.required],
+    username: [
+      { value: this.data.user?.username ?? '', disabled: this.isEdit },
+      Validators.required,
+    ],
     password: ['', this.isEdit ? [] : [Validators.required, Validators.minLength(6)]],
     roles: [this.data.user?.roles ?? [], Validators.required],
     employeeId: [this.data.user?.employeeId ?? (null as number | null)],

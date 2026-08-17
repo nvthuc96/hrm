@@ -124,6 +124,22 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <!-- Auto-format Java to Google style: `mvn spotless:apply`; CI can run `spotless:check`. -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.43.0</version>
+                <configuration>
+                    <java>
+                        <googleJavaFormat>
+                            <version>1.19.2</version>
+                            <style>GOOGLE</style>
+                        </googleJavaFormat>
+                        <removeUnusedImports/>
+                        <importOrder/>
+                    </java>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

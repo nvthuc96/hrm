@@ -16,7 +16,9 @@ export const authGuard: CanActivateFn = () => {
 export const adminGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  const isAdmin = (auth.currentUser()?.roles ?? []).some((r) => r.replace(/^ROLE_/, '') === 'ADMIN');
+  const isAdmin = (auth.currentUser()?.roles ?? []).some(
+    (r) => r.replace(/^ROLE_/, '') === 'ADMIN',
+  );
   if (isAdmin) {
     return true;
   }

@@ -36,30 +36,43 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
       @if (loading()) {
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       }
-      <div class="tbl-scroll"><table mat-table [dataSource]="data()" class="w-full">
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>{{ 'dept.col.name' | translate }}</th>
-          <td mat-cell *matCellDef="let d">{{ d.name }}</td>
-        </ng-container>
-        <ng-container matColumnDef="parent">
-          <th mat-header-cell *matHeaderCellDef>{{ 'dept.col.parent' | translate }}</th>
-          <td mat-cell *matCellDef="let d">{{ d.parentName || '—' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="text-right">{{ 'common.actions' | translate }}</th>
-          <td mat-cell *matCellDef="let d" class="text-right">
-            <button mat-icon-button [matTooltip]="'common.edit' | translate" (click)="openForm(d)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" [matTooltip]="'common.delete' | translate" (click)="confirmDelete(d)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+      <div class="tbl-scroll">
+        <table mat-table [dataSource]="data()" class="w-full">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>{{ 'dept.col.name' | translate }}</th>
+            <td mat-cell *matCellDef="let d">{{ d.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="parent">
+            <th mat-header-cell *matHeaderCellDef>{{ 'dept.col.parent' | translate }}</th>
+            <td mat-cell *matCellDef="let d">{{ d.parentName || '—' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
+              {{ 'common.actions' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let d" class="text-right">
+              <button
+                mat-icon-button
+                [matTooltip]="'common.edit' | translate"
+                (click)="openForm(d)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                [matTooltip]="'common.delete' | translate"
+                (click)="confirmDelete(d)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns"></tr>
-      </table></div>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
 
       @if (!loading() && data().length === 0) {
         <p class="text-center text-[var(--muted)] py-8 m-0">{{ 'dept.empty' | translate }}</p>
@@ -88,9 +101,13 @@ export class DepartmentListComponent implements OnInit {
     });
     ref.afterClosed().subscribe((saved) => {
       if (saved) {
-        this.snackBar.open(this.i18n.t(department ? 'dept.updated' : 'dept.added'), this.i18n.t('common.ok'), {
-          duration: 2500,
-        });
+        this.snackBar.open(
+          this.i18n.t(department ? 'dept.updated' : 'dept.added'),
+          this.i18n.t('common.ok'),
+          {
+            duration: 2500,
+          },
+        );
         this.load();
       }
     });
@@ -109,11 +126,17 @@ export class DepartmentListComponent implements OnInit {
       if (ok) {
         this.service.delete(department.id).subscribe({
           next: () => {
-            this.snackBar.open(this.i18n.t('dept.deleted'), this.i18n.t('common.ok'), { duration: 2500 });
+            this.snackBar.open(this.i18n.t('dept.deleted'), this.i18n.t('common.ok'), {
+              duration: 2500,
+            });
             this.load();
           },
           error: (err) =>
-            this.snackBar.open(err?.error?.message ?? this.i18n.t('common.deleteFailed'), this.i18n.t('common.ok'), { duration: 3000 }),
+            this.snackBar.open(
+              err?.error?.message ?? this.i18n.t('common.deleteFailed'),
+              this.i18n.t('common.ok'),
+              { duration: 3000 },
+            ),
         });
       }
     });

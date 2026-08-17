@@ -12,12 +12,20 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 @Component({
   selector: 'app-payslip-detail',
   standalone: true,
-  imports: [LocaleNumberPipe, MatDialogModule, MatButtonModule, MatIconModule, MatDividerModule, TranslatePipe],
+  imports: [
+    LocaleNumberPipe,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDividerModule,
+    TranslatePipe,
+  ],
   template: `
     <h2 mat-dialog-title>{{ 'slip.titlePrefix' | translate }} — {{ data.employeeName }}</h2>
     <mat-dialog-content>
       <div class="text-sm text-[var(--muted)] mb-2">
-        {{ 'slip.period' | translate }} {{ data.month }}/{{ data.year }} · {{ 'slip.workingDays' | translate }}: {{ data.workingDays }}
+        {{ 'slip.period' | translate }} {{ data.month }}/{{ data.year }} ·
+        {{ 'slip.workingDays' | translate }}: {{ data.workingDays }}
       </div>
 
       <div class="flex justify-between py-1">
@@ -26,9 +34,11 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
       </div>
 
       @for (d of data.details; track d.name) {
-        <div class="flex justify-between py-1 text-sm"
-             [class.text-green-700]="d.type === 'ALLOWANCE'"
-             [class.text-red-700]="d.type === 'DEDUCTION'">
+        <div
+          class="flex justify-between py-1 text-sm"
+          [class.text-green-700]="d.type === 'ALLOWANCE'"
+          [class.text-red-700]="d.type === 'DEDUCTION'"
+        >
           <span>{{ d.type === 'ALLOWANCE' ? '+ ' : '− ' }}{{ d.name }}</span>
           <span>{{ d.amount | localeNumber }} ₫</span>
         </div>

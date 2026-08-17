@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { LeaveService } from '../../core/leave.service';
-import { Employee, LeaveRequest, LeaveType } from '../../core/models';
+import { Employee, LeaveType } from '../../core/models';
 import { toIsoDate } from '../../core/date-util';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
@@ -53,7 +53,9 @@ export interface LeaveFormData {
           <mat-label>{{ 'leaveForm.type' | translate }}</mat-label>
           <mat-select formControlName="leaveTypeId">
             @for (t of data.leaveTypes; track t.id) {
-              <mat-option [value]="t.id">{{ t.name }}{{ t.paid ? '' : ('leaveForm.unpaidSuffix' | translate) }}</mat-option>
+              <mat-option [value]="t.id"
+                >{{ t.name }}{{ t.paid ? '' : ('leaveForm.unpaidSuffix' | translate) }}</mat-option
+              >
             }
           </mat-select>
         </mat-form-field>
@@ -67,8 +69,12 @@ export interface LeaveFormData {
 
         <mat-form-field appearance="outline">
           <mat-label>{{ 'leaveForm.to' | translate }}</mat-label>
-          <input matInput [matDatepicker]="endPicker" [min]="form.controls.startDate.value"
-            formControlName="endDate" />
+          <input
+            matInput
+            [matDatepicker]="endPicker"
+            [min]="form.controls.startDate.value"
+            formControlName="endDate"
+          />
           <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
           <mat-datepicker #endPicker></mat-datepicker>
         </mat-form-field>
@@ -84,7 +90,12 @@ export interface LeaveFormData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="ref.close(false)">{{ 'common.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" [disabled]="form.invalid || saving()" (click)="save()">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="form.invalid || saving()"
+        (click)="save()"
+      >
         {{ 'leaveForm.submit' | translate }}
       </button>
     </mat-dialog-actions>

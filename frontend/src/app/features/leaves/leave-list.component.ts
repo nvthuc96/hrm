@@ -71,8 +71,12 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
         @for (b of balances(); track b.leaveTypeId) {
           <mat-card class="p-3">
             <div class="text-xs text-[var(--muted)]">{{ b.leaveTypeName }}</div>
-            <div class="text-2xl font-medium">{{ b.remaining }}<span class="text-sm text-[var(--muted)]">/{{ b.entitled }}</span></div>
-            <div class="text-xs text-[var(--muted)]">{{ 'leave.balUsed' | translate:{ n: b.used } }}</div>
+            <div class="text-2xl font-medium">
+              {{ b.remaining }}<span class="text-sm text-[var(--muted)]">/{{ b.entitled }}</span>
+            </div>
+            <div class="text-xs text-[var(--muted)]">
+              {{ 'leave.balUsed' | translate: { n: b.used } }}
+            </div>
           </mat-card>
         }
       </div>
@@ -82,57 +86,80 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
       @if (loading()) {
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       }
-      <div class="tbl-scroll"><table mat-table [dataSource]="requests()" class="w-full">
-        <ng-container matColumnDef="employee">
-          <th mat-header-cell *matHeaderCellDef>{{ 'leave.col.employee' | translate }}</th>
-          <td mat-cell *matCellDef="let r">{{ r.employeeName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef>{{ 'leave.col.type' | translate }}</th>
-          <td mat-cell *matCellDef="let r">{{ r.leaveTypeName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="range">
-          <th mat-header-cell *matHeaderCellDef>{{ 'leave.col.range' | translate }}</th>
-          <td mat-cell *matCellDef="let r">{{ r.startDate }} → {{ r.endDate }}</td>
-        </ng-container>
-        <ng-container matColumnDef="days">
-          <th mat-header-cell *matHeaderCellDef>{{ 'leave.col.days' | translate }}</th>
-          <td mat-cell *matCellDef="let r">{{ r.days }}</td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>{{ 'leave.col.status' | translate }}</th>
-          <td mat-cell *matCellDef="let r">
-            <span class="badge" [class]="statusBadge(r.status)">{{ 'leaveStatus.' + r.status | translate }}</span>
-            @if (r.status === 'REJECTED' && r.decisionNote) {
-              <mat-icon class="!text-[16px] !w-4 !h-4 align-middle ml-1 text-[var(--muted)] cursor-help"
-                [matTooltip]="(('leave.rejectReasonPrefix' | translate)) + r.decisionNote">info</mat-icon>
-            }
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="text-right">{{ 'common.actions' | translate }}</th>
-          <td mat-cell *matCellDef="let r" class="text-right">
-            @if (r.status === 'PENDING') {
-              @if (canDecide()) {
-                <button mat-icon-button color="primary" [matTooltip]="'leave.approveTip' | translate" (click)="approve(r)">
-                  <mat-icon>check_circle</mat-icon>
-                </button>
-                <button mat-icon-button color="warn" [matTooltip]="'leave.rejectTip' | translate" (click)="reject(r)">
-                  <mat-icon>cancel</mat-icon>
-                </button>
+      <div class="tbl-scroll">
+        <table mat-table [dataSource]="requests()" class="w-full">
+          <ng-container matColumnDef="employee">
+            <th mat-header-cell *matHeaderCellDef>{{ 'leave.col.employee' | translate }}</th>
+            <td mat-cell *matCellDef="let r">{{ r.employeeName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>{{ 'leave.col.type' | translate }}</th>
+            <td mat-cell *matCellDef="let r">{{ r.leaveTypeName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="range">
+            <th mat-header-cell *matHeaderCellDef>{{ 'leave.col.range' | translate }}</th>
+            <td mat-cell *matCellDef="let r">{{ r.startDate }} → {{ r.endDate }}</td>
+          </ng-container>
+          <ng-container matColumnDef="days">
+            <th mat-header-cell *matHeaderCellDef>{{ 'leave.col.days' | translate }}</th>
+            <td mat-cell *matCellDef="let r">{{ r.days }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{ 'leave.col.status' | translate }}</th>
+            <td mat-cell *matCellDef="let r">
+              <span class="badge" [class]="statusBadge(r.status)">{{
+                'leaveStatus.' + r.status | translate
+              }}</span>
+              @if (r.status === 'REJECTED' && r.decisionNote) {
+                <mat-icon
+                  class="!text-[16px] !w-4 !h-4 align-middle ml-1 text-[var(--muted)] cursor-help"
+                  [matTooltip]="('leave.rejectReasonPrefix' | translate) + r.decisionNote"
+                  >info</mat-icon
+                >
               }
-              <button mat-icon-button [matTooltip]="'leave.cancelTip' | translate" (click)="cancel(r)">
-                <mat-icon>undo</mat-icon>
-              </button>
-            } @else {
-              <span class="text-[var(--muted)] text-sm pr-2">{{ r.approverName || '—' }}</span>
-            }
-          </td>
-        </ng-container>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="text-right">
+              {{ 'common.actions' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let r" class="text-right">
+              @if (r.status === 'PENDING') {
+                @if (canDecide()) {
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    [matTooltip]="'leave.approveTip' | translate"
+                    (click)="approve(r)"
+                  >
+                    <mat-icon>check_circle</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    [matTooltip]="'leave.rejectTip' | translate"
+                    (click)="reject(r)"
+                  >
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                }
+                <button
+                  mat-icon-button
+                  [matTooltip]="'leave.cancelTip' | translate"
+                  (click)="cancel(r)"
+                >
+                  <mat-icon>undo</mat-icon>
+                </button>
+              } @else {
+                <span class="text-[var(--muted)] text-sm pr-2">{{ r.approverName || '—' }}</span>
+              }
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns"></tr>
-      </table></div>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
 
       @if (!loading() && requests().length === 0) {
         <p class="text-center text-[var(--muted)] py-8 m-0">{{ 'leave.empty' | translate }}</p>
@@ -203,7 +230,9 @@ export class LeaveListComponent implements OnInit {
     });
     ref.afterClosed().subscribe((saved) => {
       if (saved) {
-        this.snackBar.open(this.i18n.t('leave.submitted'), this.i18n.t('common.ok'), { duration: 2500 });
+        this.snackBar.open(this.i18n.t('leave.submitted'), this.i18n.t('common.ok'), {
+          duration: 2500,
+        });
         this.load();
       }
     });
@@ -218,10 +247,17 @@ export class LeaveListComponent implements OnInit {
       width: '460px',
       data: {
         title: this.i18n.t('leave.rejectTitle'),
-        message: this.i18n.t('leave.rejectMsg', { name: r.employeeName, start: r.startDate, end: r.endDate }),
+        message: this.i18n.t('leave.rejectMsg', {
+          name: r.employeeName,
+          start: r.startDate,
+          end: r.endDate,
+        }),
         confirmText: this.i18n.t('leave.rejectTip'),
         color: 'warn',
-        prompt: { label: this.i18n.t('leave.rejectLabel'), placeholder: this.i18n.t('leave.rejectPlaceholder') },
+        prompt: {
+          label: this.i18n.t('leave.rejectLabel'),
+          placeholder: this.i18n.t('leave.rejectPlaceholder'),
+        },
       },
     });
     ref.afterClosed().subscribe((note) => {
@@ -236,7 +272,11 @@ export class LeaveListComponent implements OnInit {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: this.i18n.t('leave.cancelTitle'),
-        message: this.i18n.t('leave.cancelMsg', { name: r.employeeName, start: r.startDate, end: r.endDate }),
+        message: this.i18n.t('leave.cancelMsg', {
+          name: r.employeeName,
+          start: r.startDate,
+          end: r.endDate,
+        }),
         confirmText: this.i18n.t('leave.cancelConfirm'),
         color: 'warn',
       },
@@ -254,7 +294,11 @@ export class LeaveListComponent implements OnInit {
         this.loadBalances();
       },
       error: (err) =>
-        this.snackBar.open(err?.error?.message ?? this.i18n.t('leave.actionFailed'), this.i18n.t('common.ok'), { duration: 3500 }),
+        this.snackBar.open(
+          err?.error?.message ?? this.i18n.t('leave.actionFailed'),
+          this.i18n.t('common.ok'),
+          { duration: 3500 },
+        ),
     });
   }
 
