@@ -1,6 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -10,8 +10,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AttendanceService } from '../../core/attendance.service';
 import { Attendance, AttendanceStatus } from '../../core/models';
 import { toIsoDate, parseIsoDate } from '../../core/date-util';
-import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { DialogFormBase } from '../../shared/dialog-form.base';
 
 export interface AttendanceFormData {
   attendance: Attendance | null;
@@ -91,17 +91,13 @@ const STATUSES: AttendanceStatus[] = ['PRESENT', 'ABSENT', 'LEAVE', 'HOLIDAY'];
     </mat-dialog-actions>
   `,
 })
-export class AttendanceFormComponent implements OnInit {
+export class AttendanceFormComponent extends DialogFormBase implements OnInit {
   private fb = inject(FormBuilder);
   private service = inject(AttendanceService);
-  private i18n = inject(I18nService);
-  ref = inject(MatDialogRef<AttendanceFormComponent>);
   private data = inject<AttendanceFormData>(MAT_DIALOG_DATA);
 
   isEdit = !!this.data.attendance;
   statuses = STATUSES;
-  saving = signal(false);
-  error = signal<string | null>(null);
 
   form = this.fb.nonNullable.group({
     workDate: [null as Date | null, Validators.required],
@@ -128,8 +124,6 @@ export class AttendanceFormComponent implements OnInit {
 
   save(): void {
     if (this.form.invalid) return;
-    this.saving.set(true);
-    this.error.set(null);
     const raw = this.form.getRawValue();
     const payload: Partial<Attendance> = {
       employeeId: this.data.employeeId,
@@ -139,18 +133,10 @@ export class AttendanceFormComponent implements OnInit {
       checkOut: raw.checkOut || undefined,
       note: raw.note || undefined,
     };
-    const req$ = this.isEdit
-      ? this.service.update(this.data.attendance!.id, payload)
-      : this.service.create(payload);
-    req$.subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.ref.close(true);
-      },
-      error: (err) => {
-        this.saving.set(false);
-        this.error.set(err?.error?.message ?? this.i18n.t('common.saveFailed'));
-      },
-    });
+    this.submit(
+      this.isEdit
+        ? this.service.update(this.data.attendance!.id, payload)
+        : this.service.create(payload),
+    );
   }
 }

@@ -1,6 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -9,8 +9,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { PayrollService } from '../../core/payroll.service';
 import { ComponentType, SalaryComponent } from '../../core/models';
-import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { DialogFormBase } from '../../shared/dialog-form.base';
 
 @Component({
   selector: 'app-salary-component-form',
@@ -73,16 +73,12 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
     </mat-dialog-actions>
   `,
 })
-export class SalaryComponentFormComponent implements OnInit {
+export class SalaryComponentFormComponent extends DialogFormBase implements OnInit {
   private fb = inject(FormBuilder);
   private service = inject(PayrollService);
-  private i18n = inject(I18nService);
-  ref = inject(MatDialogRef<SalaryComponentFormComponent>);
   private data = inject<SalaryComponent | null>(MAT_DIALOG_DATA);
 
   isEdit = !!this.data;
-  saving = signal(false);
-  error = signal<string | null>(null);
 
   form = this.fb.nonNullable.group({
     name: ['', Validators.required],
@@ -104,21 +100,11 @@ export class SalaryComponentFormComponent implements OnInit {
 
   save(): void {
     if (this.form.invalid) return;
-    this.saving.set(true);
-    this.error.set(null);
     const payload = this.form.getRawValue();
-    const req$ = this.isEdit
-      ? this.service.updateComponent(this.data!.id, payload)
-      : this.service.createComponent(payload);
-    req$.subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.ref.close(true);
-      },
-      error: (err) => {
-        this.saving.set(false);
-        this.error.set(err?.error?.message ?? this.i18n.t('common.saveFailed'));
-      },
-    });
+    this.submit(
+      this.isEdit
+        ? this.service.updateComponent(this.data!.id, payload)
+        : this.service.createComponent(payload),
+    );
   }
 }

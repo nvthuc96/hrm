@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -9,8 +9,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { UserService } from '../../core/user.service';
 import { Employee, Role, User } from '../../core/models';
-import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { DialogFormBase } from '../../shared/dialog-form.base';
 
 export interface UserFormData {
   user: User | null;
@@ -99,16 +99,12 @@ export interface UserFormData {
     </mat-dialog-actions>
   `,
 })
-export class UserFormComponent {
+export class UserFormComponent extends DialogFormBase {
   private fb = inject(FormBuilder);
   private service = inject(UserService);
-  private i18n = inject(I18nService);
-  ref = inject(MatDialogRef<UserFormComponent>);
   data = inject<UserFormData>(MAT_DIALOG_DATA);
 
   isEdit = !!this.data.user;
-  saving = signal(false);
-  error = signal<string | null>(null);
 
   form = this.fb.nonNullable.group({
     username: [
@@ -125,33 +121,21 @@ export class UserFormComponent {
 
   save(): void {
     if (this.form.invalid) return;
-    this.saving.set(true);
-    this.error.set(null);
     const raw = this.form.getRawValue();
-
-    const req$ = this.isEdit
-      ? this.service.update(this.data.user!.id, {
-          roles: raw.roles,
-          employeeId: raw.employeeId ?? null,
-          enabled: raw.enabled,
-        })
-      : this.service.create({
-          username: raw.username,
-          password: raw.password,
-          roles: raw.roles,
-          employeeId: raw.employeeId ?? null,
-          enabled: raw.enabled,
-        });
-
-    req$.subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.ref.close(true);
-      },
-      error: (err) => {
-        this.saving.set(false);
-        this.error.set(err?.error?.message ?? this.i18n.t('common.saveFailed'));
-      },
-    });
+    this.submit(
+      this.isEdit
+        ? this.service.update(this.data.user!.id, {
+            roles: raw.roles,
+            employeeId: raw.employeeId ?? null,
+            enabled: raw.enabled,
+          })
+        : this.service.create({
+            username: raw.username,
+            password: raw.password,
+            roles: raw.roles,
+            employeeId: raw.employeeId ?? null,
+            enabled: raw.enabled,
+          }),
+    );
   }
 }

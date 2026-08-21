@@ -11,12 +11,11 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { PayrollService } from '../../core/payroll.service';
 import { PayrollPeriod, Payslip } from '../../core/models';
 import { PayslipDetailComponent } from './payslip-detail.component';
 import { saveBlob } from '../../core/download';
-import { I18nService } from '../../core/i18n/i18n.service';
+import { UiService } from '../../core/ui.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 @Component({
@@ -178,8 +177,7 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 export class PayrollListComponent implements OnInit {
   private service = inject(PayrollService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
-  private i18n = inject(I18nService);
+  private ui = inject(UiService);
 
   columns = [
     'employee',
@@ -219,10 +217,8 @@ export class PayrollListComponent implements OnInit {
         saveBlob(blob, p ? `bang-luong-${p.month}-${p.year}.xlsx` : 'bang-luong.xlsx');
         this.exporting.set(false);
       },
-      error: () => {
-        this.snackBar.open(this.i18n.t('common.exportFailed'), this.i18n.t('common.close'), {
-          duration: 3000,
-        });
+      error: (err) => {
+        this.ui.error(err, 'common.exportFailed');
         this.exporting.set(false);
       },
     });
@@ -234,19 +230,10 @@ export class PayrollListComponent implements OnInit {
     const [year, month] = val.split('-').map(Number);
     this.service.createPeriod(month, year).subscribe({
       next: (p) => {
-        this.snackBar.open(
-          this.i18n.t('pay.periodCreated', { m: p.month, y: p.year }),
-          this.i18n.t('common.ok'),
-          { duration: 2500 },
-        );
+        this.ui.toast('pay.periodCreated', { m: p.month, y: p.year });
         this.loadPeriods(p.id);
       },
-      error: (err) =>
-        this.snackBar.open(
-          err?.error?.message ?? this.i18n.t('pay.createPeriodFailed'),
-          this.i18n.t('common.ok'),
-          { duration: 3000 },
-        ),
+      error: (err) => this.ui.error(err, 'pay.createPeriodFailed'),
     });
   }
 
@@ -258,33 +245,25 @@ export class PayrollListComponent implements OnInit {
       next: (slips) => {
         this.payslips.set(slips);
         this.loading.set(false);
-        this.snackBar.open(
-          this.i18n.t('pay.generated', { n: slips.length }),
-          this.i18n.t('common.ok'),
-          { duration: 2500 },
-        );
+        this.ui.toast('pay.generated', { n: slips.length });
       },
       error: (err) => {
         this.loading.set(false);
-        this.snackBar.open(
-          err?.error?.message ?? this.i18n.t('pay.generateFailed'),
-          this.i18n.t('common.ok'),
-          { duration: 3000 },
-        );
+        this.ui.error(err, 'pay.generateFailed');
       },
     });
   }
 
   lock(p: PayrollPeriod): void {
     this.service.lock(p.id).subscribe(() => {
-      this.snackBar.open(this.i18n.t('pay.locked'), this.i18n.t('common.ok'), { duration: 2000 });
+      this.ui.toast('pay.locked');
       this.loadPeriods(p.id);
     });
   }
 
   unlock(p: PayrollPeriod): void {
     this.service.unlock(p.id).subscribe(() => {
-      this.snackBar.open(this.i18n.t('pay.unlocked'), this.i18n.t('common.ok'), { duration: 2000 });
+      this.ui.toast('pay.unlocked');
       this.loadPeriods(p.id);
     });
   }

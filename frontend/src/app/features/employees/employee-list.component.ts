@@ -10,14 +10,12 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { EmployeeService } from '../../core/employee.service';
 import { Employee } from '../../core/models';
 import { EmployeeFormComponent } from './employee-form.component';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
+import { UiService } from '../../core/ui.service';
 import { saveBlob } from '../../core/download';
-import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 @Component({
@@ -138,8 +136,7 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 export class EmployeeListComponent implements OnInit {
   private service = inject(EmployeeService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
-  private i18n = inject(I18nService);
+  private ui = inject(UiService);
 
   columns = ['employeeCode', 'fullName', 'department', 'position', 'status', 'actions'];
   data = signal<Employee[]>([]);
@@ -172,10 +169,8 @@ export class EmployeeListComponent implements OnInit {
         saveBlob(blob, 'nhan-vien.xlsx');
         this.exporting.set(false);
       },
-      error: () => {
-        this.snackBar.open(this.i18n.t('common.exportFailed'), this.i18n.t('common.close'), {
-          duration: 3000,
-        });
+      error: (err) => {
+        this.ui.error(err, 'common.exportFailed');
         this.exporting.set(false);
       },
     });
@@ -187,49 +182,17 @@ export class EmployeeListComponent implements OnInit {
       maxWidth: '95vw',
       data: employee ?? null,
     });
-    ref.afterClosed().subscribe((saved) => {
-      if (saved) {
-        this.snackBar.open(
-          this.i18n.t(employee ? 'emp.updated' : 'emp.added'),
-          this.i18n.t('common.ok'),
-          {
-            duration: 2500,
-          },
-        );
-        this.load();
-      }
-    });
+    this.ui.afterSaved(ref, !employee, 'emp.added', 'emp.updated', () => this.load());
   }
 
   confirmDelete(employee: Employee): void {
-    const ref = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: this.i18n.t('emp.deleteTitle'),
-        message: this.i18n.t('emp.deleteMsg', {
-          name: employee.fullName,
-          code: employee.employeeCode,
-        }),
-        confirmText: this.i18n.t('common.delete'),
-        color: 'warn',
-      },
-    });
-    ref.afterClosed().subscribe((ok) => {
-      if (ok) {
-        this.service.delete(employee.id).subscribe({
-          next: () => {
-            this.snackBar.open(this.i18n.t('emp.deleted'), this.i18n.t('common.ok'), {
-              duration: 2500,
-            });
-            this.load();
-          },
-          error: (err) =>
-            this.snackBar.open(
-              err?.error?.message ?? this.i18n.t('common.deleteFailed'),
-              this.i18n.t('common.ok'),
-              { duration: 3000 },
-            ),
-        });
-      }
+    this.ui.confirmDelete({
+      titleKey: 'emp.deleteTitle',
+      messageKey: 'emp.deleteMsg',
+      messageParams: { name: employee.fullName, code: employee.employeeCode },
+      delete$: this.service.delete(employee.id),
+      successKey: 'emp.deleted',
+      onDone: () => this.load(),
     });
   }
 

@@ -10,13 +10,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { LeaveService } from '../../core/leave.service';
 import { EmployeeService } from '../../core/employee.service';
 import { AuthService } from '../../core/auth.service';
 import { Employee, LeaveBalance, LeaveRequest, LeaveStatus, LeaveType } from '../../core/models';
 import { LeaveFormComponent } from './leave-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
+import { UiService } from '../../core/ui.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
@@ -173,7 +173,7 @@ export class LeaveListComponent implements OnInit {
   private auth = inject(AuthService);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private ui = inject(UiService);
   private i18n = inject(I18nService);
 
   private static readonly DECIDER_ROLES = ['ADMIN', 'HR', 'MANAGER'];
@@ -230,16 +230,14 @@ export class LeaveListComponent implements OnInit {
     });
     ref.afterClosed().subscribe((saved) => {
       if (saved) {
-        this.snackBar.open(this.i18n.t('leave.submitted'), this.i18n.t('common.ok'), {
-          duration: 2500,
-        });
+        this.ui.toast('leave.submitted');
         this.load();
       }
     });
   }
 
   approve(r: LeaveRequest): void {
-    this.act(this.leaveService.approve(r.id), this.i18n.t('leave.approved'));
+    this.act(this.leaveService.approve(r.id), 'leave.approved');
   }
 
   reject(r: LeaveRequest): void {
@@ -263,7 +261,7 @@ export class LeaveListComponent implements OnInit {
     ref.afterClosed().subscribe((note) => {
       // Dialog trả string (kể cả rỗng) khi xác nhận, false khi hủy.
       if (note !== false && note !== undefined) {
-        this.act(this.leaveService.reject(r.id, note as string), this.i18n.t('leave.rejected'));
+        this.act(this.leaveService.reject(r.id, note as string), 'leave.rejected');
       }
     });
   }
@@ -282,23 +280,18 @@ export class LeaveListComponent implements OnInit {
       },
     });
     ref.afterClosed().subscribe((ok) => {
-      if (ok) this.act(this.leaveService.cancel(r.id), this.i18n.t('leave.cancelled'));
+      if (ok) this.act(this.leaveService.cancel(r.id), 'leave.cancelled');
     });
   }
 
-  private act(obs: ReturnType<LeaveService['approve']>, msg: string): void {
+  private act(obs: ReturnType<LeaveService['approve']>, successKey: string): void {
     obs.subscribe({
       next: () => {
-        this.snackBar.open(msg, this.i18n.t('common.ok'), { duration: 2500 });
+        this.ui.toast(successKey);
         this.load();
         this.loadBalances();
       },
-      error: (err) =>
-        this.snackBar.open(
-          err?.error?.message ?? this.i18n.t('leave.actionFailed'),
-          this.i18n.t('common.ok'),
-          { duration: 3500 },
-        ),
+      error: (err) => this.ui.error(err, 'leave.actionFailed'),
     });
   }
 

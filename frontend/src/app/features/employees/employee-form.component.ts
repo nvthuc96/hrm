@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -12,8 +12,8 @@ import { DepartmentService } from '../../core/department.service';
 import { PositionService } from '../../core/position.service';
 import { Department, Employee, EmployeeStatus, Position } from '../../core/models';
 import { toIsoDate, parseIsoDate } from '../../core/date-util';
-import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { DialogFormBase } from '../../shared/dialog-form.base';
 
 const STATUSES: EmployeeStatus[] = ['ACTIVE', 'ON_LEAVE', 'TERMINATED'];
 
@@ -138,13 +138,11 @@ const STATUSES: EmployeeStatus[] = ['ACTIVE', 'ON_LEAVE', 'TERMINATED'];
     </mat-dialog-actions>
   `,
 })
-export class EmployeeFormComponent implements OnInit {
+export class EmployeeFormComponent extends DialogFormBase implements OnInit {
   private fb = inject(FormBuilder);
   private employeeService = inject(EmployeeService);
   private departmentService = inject(DepartmentService);
   private positionService = inject(PositionService);
-  private i18n = inject(I18nService);
-  ref = inject(MatDialogRef<EmployeeFormComponent>);
   private data = inject<Employee | null>(MAT_DIALOG_DATA);
 
   isEdit = !!this.data;
@@ -152,8 +150,6 @@ export class EmployeeFormComponent implements OnInit {
   today = new Date();
   departments = signal<Department[]>([]);
   positions = signal<Position[]>([]);
-  saving = signal(false);
-  error = signal<string | null>(null);
 
   form = this.fb.nonNullable.group({
     employeeCode: ['', Validators.required],
@@ -193,8 +189,6 @@ export class EmployeeFormComponent implements OnInit {
 
   save(): void {
     if (this.form.invalid) return;
-    this.saving.set(true);
-    this.error.set(null);
     const { dob, hireDate, ...rest } = this.form.getRawValue();
     const payload: Partial<Employee> = {
       ...rest,
@@ -204,20 +198,10 @@ export class EmployeeFormComponent implements OnInit {
       departmentId: rest.departmentId ?? undefined,
       positionId: rest.positionId ?? undefined,
     };
-
-    const req$ = this.isEdit
-      ? this.employeeService.update(this.data!.id, payload)
-      : this.employeeService.create(payload);
-
-    req$.subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.ref.close(true);
-      },
-      error: (err) => {
-        this.saving.set(false);
-        this.error.set(err?.error?.message ?? this.i18n.t('common.saveFailed'));
-      },
-    });
+    this.submit(
+      this.isEdit
+        ? this.employeeService.update(this.data!.id, payload)
+        : this.employeeService.create(payload),
+    );
   }
 }

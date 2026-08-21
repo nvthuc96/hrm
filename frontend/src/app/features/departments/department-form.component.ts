@@ -1,6 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -8,8 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DepartmentService } from '../../core/department.service';
 import { Department } from '../../core/models';
-import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { DialogFormBase } from '../../shared/dialog-form.base';
 
 export interface DepartmentFormData {
   department: Department | null;
@@ -73,17 +73,13 @@ export interface DepartmentFormData {
     </mat-dialog-actions>
   `,
 })
-export class DepartmentFormComponent implements OnInit {
+export class DepartmentFormComponent extends DialogFormBase implements OnInit {
   private fb = inject(FormBuilder);
   private service = inject(DepartmentService);
-  private i18n = inject(I18nService);
-  ref = inject(MatDialogRef<DepartmentFormComponent>);
   private data = inject<DepartmentFormData>(MAT_DIALOG_DATA);
 
   isEdit = !!this.data.department;
   parentOptions: Department[] = [];
-  saving = signal(false);
-  error = signal<string | null>(null);
 
   form = this.fb.nonNullable.group({
     name: ['', Validators.required],
@@ -106,26 +102,16 @@ export class DepartmentFormComponent implements OnInit {
 
   save(): void {
     if (this.form.invalid) return;
-    this.saving.set(true);
-    this.error.set(null);
     const raw = this.form.getRawValue();
     const payload: Partial<Department> = {
       name: raw.name,
       parentId: raw.parentId ?? undefined,
       managerId: raw.managerId ?? undefined,
     };
-    const req$ = this.isEdit
-      ? this.service.update(this.data.department!.id, payload)
-      : this.service.create(payload);
-    req$.subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.ref.close(true);
-      },
-      error: (err) => {
-        this.saving.set(false);
-        this.error.set(err?.error?.message ?? this.i18n.t('common.saveFailed'));
-      },
-    });
+    this.submit(
+      this.isEdit
+        ? this.service.update(this.data.department!.id, payload)
+        : this.service.create(payload),
+    );
   }
 }

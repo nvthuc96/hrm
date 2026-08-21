@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -10,8 +10,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MeService } from '../../core/me.service';
 import { LeaveType } from '../../core/models';
 import { toIsoDate } from '../../core/date-util';
-import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { DialogFormBase } from '../../shared/dialog-form.base';
 
 export interface MyLeaveFormData {
   leaveTypes: LeaveType[];
@@ -91,15 +91,10 @@ export interface MyLeaveFormData {
     </mat-dialog-actions>
   `,
 })
-export class MyLeaveFormComponent {
+export class MyLeaveFormComponent extends DialogFormBase {
   private fb = inject(FormBuilder);
   private me = inject(MeService);
-  private i18n = inject(I18nService);
-  ref = inject(MatDialogRef<MyLeaveFormComponent>);
   data = inject<MyLeaveFormData>(MAT_DIALOG_DATA);
-
-  saving = signal(false);
-  error = signal<string | null>(null);
 
   form = this.fb.nonNullable.group({
     leaveTypeId: [null as number | null, Validators.required],
@@ -110,25 +105,15 @@ export class MyLeaveFormComponent {
 
   save(): void {
     if (this.form.invalid) return;
-    this.saving.set(true);
-    this.error.set(null);
     const raw = this.form.getRawValue();
-    this.me
-      .createLeave({
+    this.submit(
+      this.me.createLeave({
         leaveTypeId: raw.leaveTypeId!,
         startDate: toIsoDate(raw.startDate!),
         endDate: toIsoDate(raw.endDate!),
         reason: raw.reason || undefined,
-      })
-      .subscribe({
-        next: () => {
-          this.saving.set(false);
-          this.ref.close(true);
-        },
-        error: (err) => {
-          this.saving.set(false);
-          this.error.set(err?.error?.message ?? this.i18n.t('leaveForm.submitFailed'));
-        },
-      });
+      }),
+      'leaveForm.submitFailed',
+    );
   }
 }

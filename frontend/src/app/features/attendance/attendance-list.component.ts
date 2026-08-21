@@ -11,13 +11,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { AttendanceService } from '../../core/attendance.service';
 import { EmployeeService } from '../../core/employee.service';
 import { Attendance, Employee, MonthlyAttendance } from '../../core/models';
 import { AttendanceFormComponent } from './attendance-form.component';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
-import { I18nService } from '../../core/i18n/i18n.service';
+import { UiService } from '../../core/ui.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 @Component({
@@ -160,8 +158,7 @@ export class AttendanceListComponent implements OnInit {
   private attendanceService = inject(AttendanceService);
   private employeeService = inject(EmployeeService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
-  private i18n = inject(I18nService);
+  private ui = inject(UiService);
 
   columns = ['workDate', 'checkIn', 'checkOut', 'workedHours', 'otHours', 'status', 'actions'];
   employees = signal<Employee[]>([]);
@@ -189,44 +186,17 @@ export class AttendanceListComponent implements OnInit {
         defaultDate: `${this.monthCtrl.value}-01`,
       },
     });
-    ref.afterClosed().subscribe((saved) => {
-      if (saved) {
-        this.snackBar.open(
-          this.i18n.t(attendance ? 'att.updated' : 'att.added'),
-          this.i18n.t('common.ok'),
-          { duration: 2500 },
-        );
-        this.load();
-      }
-    });
+    this.ui.afterSaved(ref, !attendance, 'att.added', 'att.updated', () => this.load());
   }
 
   confirmDelete(a: Attendance): void {
-    const ref = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: this.i18n.t('att.deleteTitle'),
-        message: this.i18n.t('att.deleteMsg', { date: a.workDate }),
-        confirmText: this.i18n.t('common.delete'),
-        color: 'warn',
-      },
-    });
-    ref.afterClosed().subscribe((ok) => {
-      if (ok) {
-        this.attendanceService.delete(a.id).subscribe({
-          next: () => {
-            this.snackBar.open(this.i18n.t('att.deleted'), this.i18n.t('common.ok'), {
-              duration: 2500,
-            });
-            this.load();
-          },
-          error: (err) =>
-            this.snackBar.open(
-              err?.error?.message ?? this.i18n.t('common.deleteFailed'),
-              this.i18n.t('common.ok'),
-              { duration: 3000 },
-            ),
-        });
-      }
+    this.ui.confirmDelete({
+      titleKey: 'att.deleteTitle',
+      messageKey: 'att.deleteMsg',
+      messageParams: { date: a.workDate },
+      delete$: this.attendanceService.delete(a.id),
+      successKey: 'att.deleted',
+      onDone: () => this.load(),
     });
   }
 

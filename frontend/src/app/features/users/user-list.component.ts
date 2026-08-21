@@ -5,12 +5,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../../core/user.service';
 import { EmployeeService } from '../../core/employee.service';
 import { Employee, Role, User } from '../../core/models';
 import { UserFormComponent } from './user-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
+import { UiService } from '../../core/ui.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
@@ -119,7 +119,7 @@ export class UserListComponent implements OnInit {
   private service = inject(UserService);
   private employeeService = inject(EmployeeService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private ui = inject(UiService);
   private i18n = inject(I18nService);
 
   columns = ['username', 'roles', 'employee', 'status', 'actions'];
@@ -141,16 +141,7 @@ export class UserListComponent implements OnInit {
       width: '480px',
       data: { user, roles: this.roles(), employees: this.employees() },
     });
-    ref.afterClosed().subscribe((saved) => {
-      if (saved) {
-        this.snackBar.open(
-          this.i18n.t(user ? 'user.updated' : 'user.created'),
-          this.i18n.t('common.ok'),
-          { duration: 2500 },
-        );
-        this.load();
-      }
-    });
+    this.ui.afterSaved(ref, !user, 'user.created', 'user.updated', () => this.load());
   }
 
   resetPassword(u: User): void {
@@ -170,49 +161,24 @@ export class UserListComponent implements OnInit {
     ref.afterClosed().subscribe((pwd) => {
       if (pwd === false || pwd === undefined) return;
       if ((pwd as string).length < 6) {
-        this.snackBar.open(this.i18n.t('user.pwMin'), this.i18n.t('common.ok'), { duration: 3000 });
+        this.ui.toast('user.pwMin');
         return;
       }
       this.service.resetPassword(u.id, pwd as string).subscribe({
-        next: () =>
-          this.snackBar.open(this.i18n.t('user.pwReset'), this.i18n.t('common.ok'), {
-            duration: 2500,
-          }),
-        error: (err) =>
-          this.snackBar.open(
-            err?.error?.message ?? this.i18n.t('user.actionFailed'),
-            this.i18n.t('common.ok'),
-            { duration: 3500 },
-          ),
+        next: () => this.ui.toast('user.pwReset'),
+        error: (err) => this.ui.error(err, 'user.actionFailed'),
       });
     });
   }
 
   remove(u: User): void {
-    const ref = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: this.i18n.t('user.deleteTitle'),
-        message: this.i18n.t('user.deleteMsg', { name: u.username }),
-        confirmText: this.i18n.t('common.delete'),
-        color: 'warn',
-      },
-    });
-    ref.afterClosed().subscribe((ok) => {
-      if (!ok) return;
-      this.service.delete(u.id).subscribe({
-        next: () => {
-          this.snackBar.open(this.i18n.t('user.deleted'), this.i18n.t('common.ok'), {
-            duration: 2500,
-          });
-          this.load();
-        },
-        error: (err) =>
-          this.snackBar.open(
-            err?.error?.message ?? this.i18n.t('common.deleteFailed'),
-            this.i18n.t('common.ok'),
-            { duration: 3500 },
-          ),
-      });
+    this.ui.confirmDelete({
+      titleKey: 'user.deleteTitle',
+      messageKey: 'user.deleteMsg',
+      messageParams: { name: u.username },
+      delete$: this.service.delete(u.id),
+      successKey: 'user.deleted',
+      onDone: () => this.load(),
     });
   }
 

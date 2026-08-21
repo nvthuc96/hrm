@@ -5,12 +5,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MeService } from '../../core/me.service';
 import { LeaveService } from '../../core/leave.service';
 import { LeaveRequest, LeaveStatus, LeaveType } from '../../core/models';
 import { MyLeaveFormComponent } from './my-leave-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
+import { UiService } from '../../core/ui.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
@@ -118,7 +118,7 @@ export class MyLeavesComponent implements OnInit {
   private me = inject(MeService);
   private leaveService = inject(LeaveService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private ui = inject(UiService);
   private i18n = inject(I18nService);
 
   columns = ['type', 'range', 'days', 'reason', 'status', 'actions'];
@@ -159,9 +159,7 @@ export class MyLeavesComponent implements OnInit {
     });
     ref.afterClosed().subscribe((ok) => {
       if (ok) {
-        this.snackBar.open(this.i18n.t('leave.submitted'), this.i18n.t('common.close'), {
-          duration: 2500,
-        });
+        this.ui.toast('leave.submitted');
         this.load();
       }
     });
@@ -180,17 +178,10 @@ export class MyLeavesComponent implements OnInit {
       if (ok) {
         this.me.cancelLeave(r.id).subscribe({
           next: () => {
-            this.snackBar.open(this.i18n.t('leave.cancelled'), this.i18n.t('common.close'), {
-              duration: 2500,
-            });
+            this.ui.toast('leave.cancelled');
             this.load();
           },
-          error: (err) =>
-            this.snackBar.open(
-              err?.error?.message ?? this.i18n.t('me.leaves.cancelFailed'),
-              this.i18n.t('common.close'),
-              { duration: 3000 },
-            ),
+          error: (err) => this.ui.error(err, 'me.leaves.cancelFailed'),
         });
       }
     });

@@ -7,12 +7,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { PayrollService } from '../../core/payroll.service';
 import { SalaryComponent } from '../../core/models';
 import { SalaryComponentFormComponent } from './salary-component-form.component';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
-import { I18nService } from '../../core/i18n/i18n.service';
+import { UiService } from '../../core/ui.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 @Component({
@@ -105,8 +103,7 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 export class SalaryComponentListComponent implements OnInit {
   private service = inject(PayrollService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
-  private i18n = inject(I18nService);
+  private ui = inject(UiService);
 
   columns = ['name', 'type', 'amount', 'taxable', 'actions'];
   data = signal<SalaryComponent[]>([]);
@@ -121,44 +118,17 @@ export class SalaryComponentListComponent implements OnInit {
       width: '440px',
       data: component ?? null,
     });
-    ref.afterClosed().subscribe((saved) => {
-      if (saved) {
-        this.snackBar.open(
-          this.i18n.t(component ? 'sc.updated' : 'sc.added'),
-          this.i18n.t('common.ok'),
-          { duration: 2500 },
-        );
-        this.load();
-      }
-    });
+    this.ui.afterSaved(ref, !component, 'sc.added', 'sc.updated', () => this.load());
   }
 
   confirmDelete(component: SalaryComponent): void {
-    const ref = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: this.i18n.t('sc.deleteTitle'),
-        message: this.i18n.t('sc.deleteMsg', { name: component.name }),
-        confirmText: this.i18n.t('common.delete'),
-        color: 'warn',
-      },
-    });
-    ref.afterClosed().subscribe((ok) => {
-      if (ok) {
-        this.service.deleteComponent(component.id).subscribe({
-          next: () => {
-            this.snackBar.open(this.i18n.t('sc.deleted'), this.i18n.t('common.ok'), {
-              duration: 2500,
-            });
-            this.load();
-          },
-          error: (err) =>
-            this.snackBar.open(
-              err?.error?.message ?? this.i18n.t('common.deleteFailed'),
-              this.i18n.t('common.ok'),
-              { duration: 3000 },
-            ),
-        });
-      }
+    this.ui.confirmDelete({
+      titleKey: 'sc.deleteTitle',
+      messageKey: 'sc.deleteMsg',
+      messageParams: { name: component.name },
+      delete$: this.service.deleteComponent(component.id),
+      successKey: 'sc.deleted',
+      onDone: () => this.load(),
     });
   }
 
